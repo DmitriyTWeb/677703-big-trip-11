@@ -1,6 +1,15 @@
 import {pointTypes, activityCategory, destinations} from "../mock/points.js";
-import {formatTimeToEditPoint} from "../utils.js";
+import {castTimeFormat, createElement} from "../utils.js";
 
+const formatTimeToEditPoint = (timestamp) => {
+  const date = castTimeFormat(timestamp.getDate());
+  const month = castTimeFormat(timestamp.getMonth());
+  const year = `${timestamp.getFullYear()}`.substring(2);
+  const hours = castTimeFormat(timestamp.getHours());
+  const minutes = castTimeFormat(timestamp.getMinutes());
+
+  return `${date}/${month}/${year} ${hours}:${minutes}`;
+};
 const createEventTypeItemGroup = (types) => {
   return types.map((type) => {
     type = type.toLowerCase();
@@ -12,7 +21,11 @@ const createEventTypeItemGroup = (types) => {
     );
   }).join(`\n`);
 };
-
+const createDestinationTemplate = (destination) => {
+  return (
+    `<option value="${destination}"></option>`
+  );
+};
 const createOfferTemplate = (option) => {
   const {name, title, price} = option;
   return (
@@ -35,8 +48,7 @@ const createImagesTemplate = (images) => {
   }).join(`\n`);
 };
 
-
-export const createEditPointTemplate = (point) => {
+const createEditPointTemplate = (point) => {
   const {category,
     type,
     destination,
@@ -60,11 +72,7 @@ export const createEditPointTemplate = (point) => {
   const activityItemsTemplate = createEventTypeItemGroup(activityTypes);
 
   const header = `${type} ${category.toLowerCase() === `activity` ? `in` : `to`}`;
-  const destinationOptions = destinations.map((dest) => {
-    return (
-      `<option value="${dest}"></option>`
-    );
-  }).join(`\n`);
+  const destinationOptions = destinations.map((it) => createDestinationTemplate(it)).join(`\n`);
 
   const startTime = formatTimeToEditPoint(startDate);
   const endTime = formatTimeToEditPoint(endDate);
@@ -72,8 +80,8 @@ export const createEditPointTemplate = (point) => {
   const offersTemplate = options.map((option) => createOfferTemplate(option)).join(`\n`);
   const imagesTemplate = createImagesTemplate(images);
 
-  return `
-    <form class="trip-events__item  event  event--edit" action="#" method="post">
+  return (
+    `<form class="trip-events__item  event  event--edit" action="#" method="post">
       <header class="event__header">
         <div class="event__type-wrapper">
           <label class="event__type  event__type-btn" for="event-type-toggle-1">
@@ -160,6 +168,29 @@ export const createEditPointTemplate = (point) => {
           </div>
         </section>
       </section>
-    </form>
-  `;
+    </form>`
+  );
 };
+
+export default class EditPoint {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createEditPointTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
