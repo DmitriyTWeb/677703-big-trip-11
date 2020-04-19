@@ -1,20 +1,20 @@
-import {formatTime, getDuration} from "../utils.js";
+import {createElement, formatTime, getDuration} from "../utils.js";
 
 const createCheckedOptionsTemplate = (options) => {
   return options.map((option) => {
     const {title, price} = option;
 
-    return `
-      <li class="event__offer">
+    return (
+      `<li class="event__offer">
         <span class="event__offer-title">${title}</span>
         &plus;
         &euro;&nbsp;<span class="event__offer-price">${price}</span>
-      </li>`;
+      </li>`);
   }).join(`\n`);
 
 };
 
-export const createPointTemplate = (point) => {
+const createPointTemplate = (point) => {
   const {category,
     type,
     destination,
@@ -28,8 +28,8 @@ export const createPointTemplate = (point) => {
   const duration = getDuration(startDate, endDate);
   const optionsTemplate = createCheckedOptionsTemplate(options);
 
-  return `
-    <li class="trip-events__item">
+  return (
+    `<li class="trip-events__item">
       <div class="event">
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="img/icons/${type}.png" alt="Event type icon">
@@ -58,6 +58,30 @@ export const createPointTemplate = (point) => {
           <span class="visually-hidden">Open event</span>
         </button>
       </div>
-    </li>
-  `;
+    </li>`
+  );
 };
+
+
+export default class Point {
+  constructor(point) {
+    this._point = point;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPointTemplate(this._point);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}

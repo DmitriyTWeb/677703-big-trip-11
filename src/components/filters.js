@@ -1,3 +1,5 @@
+import {createElement} from "../utils.js";
+
 const createFilterMarkup = (name, isChecked) => {
   return (`
     <div class="trip-filters__filter">
@@ -17,15 +19,37 @@ const createFilterMarkup = (name, isChecked) => {
 
 };
 
-export const createFiltersTemplate = (filters) => {
+const createFiltersTemplate = (filters) => {
   const filtersMarkup = filters.map((filter, i) => createFilterMarkup(filter.name, i === 0)).join(`\n`);
 
-  return `
-    <form class="trip-filters" action="#" method="get">
+  return (
+    `<form class="trip-filters" action="#" method="get">
       ${filtersMarkup}
 
-
       <button class="visually-hidden" type="submit">Accept filter</button>
-    </form>
-  `;
+    </form>`
+  );
 };
+
+export default class Filters {
+  constructor(filters) {
+    this._filters = filters;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFiltersTemplate(this._filters);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
