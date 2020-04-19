@@ -12,6 +12,9 @@ const getDestinations = (points) => {
   return sortedPoints.map((point) => point.destination);
 };
 const getRouteDates = (points) => {
+  if (points.length === 0) {
+    return ``;
+  }
   const sortedPoints = sortPoints(points);
 
   const startDate = sortedPoints[0].startDate;
@@ -27,6 +30,9 @@ const getRouteDates = (points) => {
   return routeDates;
 };
 const getRoute = (points) => {
+  if (points.length === 0) {
+    return ``;
+  }
   const destinations = getDestinations(points);
 
   let route = ``;
@@ -39,6 +45,9 @@ const getRoute = (points) => {
   return route;
 };
 const getTotalCost = (points) => {
+  if (points.length === 0) {
+    return 0;
+  }
   return points
     .map((point) => point.totalPointPrice)
     .reduce((summ, current) => summ + current, 0);
