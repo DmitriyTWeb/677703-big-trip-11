@@ -3,6 +3,7 @@ import EditPointComponent from "./components/edit-point.js";
 import FiltersComponent from "./components/filters.js";
 import PointComponent from "./components/point.js";
 import MenuComponent from "./components/menu.js";
+import NoPointsComponent from "./components/no-points.js";
 import SortComponent from "./components/sort.js";
 import TripDaysComponent from "./components/trip-days.js";
 import TripInfoComponent from "./components/trip-info.js";
@@ -61,22 +62,33 @@ const renderPoint = (dayEventsListElement, point) => {
   editForm.addEventListener(`submit`, (evt) => {
     evt.preventDefault();
     replaceEditToPoint();
+    document.removeEventListener(`keydown`, onEscKeyDown);
   });
 
   render(dayEventsListElement, pointComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
-let currentDay = null;
-let dayCounter = 0;
-let dayElement = null;
-
-points.forEach((point) => {
-  if (!currentDay || !isDatesEqual(currentDay, point.startDate)) {
-    dayCounter++;
-    currentDay = point.startDate;
-    dayElement = new DayComponent(currentDay, dayCounter).getElement();
-    render(tripDaysListElement, dayElement, RenderPosition.BEFOREEND);
+const renderEvents = (events) => {
+  if (events.length === 0) {
+    render(tripEventsElement, new NoPointsComponent().getElement(), RenderPosition.BEFOREEND);
+    return;
   }
-  let dayEventsListElement = dayElement.querySelector(`.trip-events__list`);
-  renderPoint(dayEventsListElement, point);
-});
+
+  let currentDay = null;
+  let dayCounter = 0;
+  let dayElement = null;
+
+  points.forEach((point) => {
+    if (!currentDay || !isDatesEqual(currentDay, point.startDate)) {
+      dayCounter++;
+      currentDay = point.startDate;
+      dayElement = new DayComponent(currentDay, dayCounter).getElement();
+      render(tripDaysListElement, dayElement, RenderPosition.BEFOREEND);
+    }
+    let dayEventsListElement = dayElement.querySelector(`.trip-events__list`);
+    renderPoint(dayEventsListElement, point);
+  });
+};
+
+renderEvents(points);
+
