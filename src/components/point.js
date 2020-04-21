@@ -1,4 +1,5 @@
-import {createElement, formatTime, getDuration} from "../utils.js";
+import AbstractComponent from "./abstract-component.js";
+import {formatTime, getDuration} from "../utils.js";
 
 const createCheckedOptionsTemplate = (options) => {
   return options.map((option) => {
@@ -63,25 +64,14 @@ const createPointTemplate = (point) => {
 };
 
 
-export default class Point {
+export default class Point extends AbstractComponent {
   constructor(point) {
+    super();
+
     this._point = point;
-    this._element = null;
   }
 
   getTemplate() {
     return createPointTemplate(this._point);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

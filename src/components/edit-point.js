@@ -1,5 +1,6 @@
+import AbstractComponent from "./abstract-component.js";
 import {pointTypes, activityCategory, destinations} from "../mock/points.js";
-import {castTimeFormat, createElement} from "../utils.js";
+import {castTimeFormat} from "../utils.js";
 
 const formatTimeToEditPoint = (timestamp) => {
   const date = castTimeFormat(timestamp.getDate());
@@ -172,25 +173,14 @@ const createEditPointTemplate = (point) => {
   );
 };
 
-export default class EditPoint {
+export default class EditPoint extends AbstractComponent {
   constructor(point) {
+    super();
+
     this._point = point;
-    this._element = null;
   }
 
   getTemplate() {
     return createEditPointTemplate(this._point);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
