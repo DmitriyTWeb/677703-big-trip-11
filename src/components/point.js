@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {formatTime, getDuration} from "../utils.js";
+import {formatTime, getDuration} from "../utils/common.js";
 
 const createCheckedOptionsTemplate = (options) => {
   return options.map((option) => {
@@ -73,5 +73,9 @@ export default class Point extends AbstractComponent {
 
   getTemplate() {
     return createPointTemplate(this._point);
+  }
+
+  setRollupButtonClickHandler(cb) {
+    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
   }
 }

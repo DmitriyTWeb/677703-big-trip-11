@@ -1,6 +1,6 @@
 import AbstractComponent from "./abstract-component.js";
 import {MONTHS} from "../const.js";
-import {castTimeFormat} from "../utils.js";
+import {castTimeFormat} from "../utils/common.js";
 
 const createDayTemplate = (date, dayNumber) => {
   const month = MONTHS[date.getMonth()];
