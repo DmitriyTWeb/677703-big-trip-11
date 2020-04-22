@@ -1,5 +1,5 @@
+import AbstractComponent from "./abstract-component.js";
 import {MONTHS} from "../const.js";
-import {createElement} from "../utils.js";
 
 const sortPoints = (points) => {
   // сортирует точки по дате от меньшей к большей
@@ -52,7 +52,6 @@ const getTotalCost = (points) => {
     .map((point) => point.totalPointPrice)
     .reduce((summ, current) => summ + current, 0);
 };
-
 const createTripInfoTemplate = (points) => {
   const route = getRoute(points);
   const dates = getRouteDates(points);
@@ -73,25 +72,14 @@ const createTripInfoTemplate = (points) => {
   );
 };
 
-export default class TripInfo {
+export default class TripInfo extends AbstractComponent {
   constructor(points) {
+    super();
+
     this._points = points;
-    this._element = null;
   }
 
   getTemplate() {
     return createTripInfoTemplate(this._points);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
