@@ -2,14 +2,23 @@ import AbstractComponent from "./abstract-component.js";
 import {MONTHS} from "../const.js";
 import {castTimeFormat} from "../utils/common.js";
 
-const createDayTemplate = (date, dayNumber) => {
+const createDayInfoContentTemplate = (date, dayNumber) => {
   const month = MONTHS[date.getMonth()];
 
   return (
+    `
+    <span class="day__counter">${dayNumber}</span>
+    <time class="day__date" datetime="${date.toISOString()}">${month} ${castTimeFormat(date.getDate())}</time>
+    `
+  );
+};
+
+const createDayTemplate = (date, dayNumber) => {
+  const dayInfoContent = (date && dayNumber) ? createDayInfoContentTemplate(date, dayNumber) : ``;
+  return (
     `<li class="trip-days__item  day">
       <div class="day__info">
-        <span class="day__counter">${dayNumber}</span>
-        <time class="day__date" datetime="${date.toISOString()}">${month} ${castTimeFormat(date.getDate())}</time>
+        ${dayInfoContent}
       </div>
 
       <ul class="trip-events__list"></ul>

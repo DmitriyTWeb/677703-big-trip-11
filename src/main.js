@@ -5,7 +5,7 @@ import TripController from "./controllers/trip.js";
 import TripInfoComponent from "./components/trip-info.js";
 import {render, RenderPosition} from "./utils/render.js";
 import {generateFilters} from "./mock/filters.js";
-import {generatePoints} from "./mock/points.js";
+import {generatePoints, destinations} from "./mock/points.js";
 
 const POINTS_COUNT = 22;
 
@@ -31,4 +31,4 @@ const eventsListComponent = new EventsListComponent();
 render(pageMainContainerElement, eventsListComponent, RenderPosition.BEFOREEND);
 
 const tripController = new TripController(eventsListComponent);
-tripController.render(points);
+tripController.render(points, destinations);
