@@ -76,6 +76,7 @@ export default class Point extends AbstractComponent {
   }
 
   setRollupButtonClickHandler(cb) {
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, cb);
   }
 }

@@ -8,8 +8,9 @@ const Mode = {
 };
 
 export default class Point {
-  constructor(container) {
+  constructor(container, onDataChange) {
     this._container = container;
+    this._onDataChange = onDataChange;
 
     this._pointComponent = null;
     this._pointEditComponent = null;
@@ -17,6 +18,9 @@ export default class Point {
   }
 
   render(point, destinations) {
+    const oldPointComponent = this._pointComponent;
+    const oldPointEditComponent = this._pointEditComponent;
+
     this._pointComponent = new PointComponent(point);
     this._pointEditComponent = new PointEditComponent(point, destinations);
 
@@ -27,16 +31,30 @@ export default class Point {
 
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      this._replaceEditToPoint();
 
+      this._replaceEditToPoint();
     });
 
-    render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
+    this._pointEditComponent.setFavoriteButtonClickHandler(() => {
+      this._onDataChange(this, point, Object.assign({}, point, {
+        isFavorite: !point.isFavorite,
+      }));
+    });
+
+
+    if (oldPointEditComponent && oldPointComponent) {
+      replace(this._pointComponent, oldPointComponent);
+      replace(this._pointEditComponent, oldPointEditComponent);
+    } else {
+      render(this._container, this._pointComponent, RenderPosition.BEFOREEND);
+    }
+
   }
 
   _replaceEditToPoint() {
     document.removeEventListener(`keydown`, this._onEscKeydown);
 
+    console.log(`this = `, this);
     replace(this._pointComponent, this._pointEditComponent);
   }
 

@@ -7,7 +7,7 @@ import TripDaysComponent from "../components/trip-days.js";
 import {isDatesEqual} from "../utils/common.js";
 
 
-const renderPoints = (container, points, destinations, isSortingOn = false) => {
+const renderPoints = (container, points, destinations, isSortingOn = false, onDataChange) => {
   let currentDay = null;
   let dayCounter = 0;
   let dayComponent = null;
@@ -30,7 +30,7 @@ const renderPoints = (container, points, destinations, isSortingOn = false) => {
       dayEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
     }
 
-    const pointController = new PointController(dayEventsListElement);
+    const pointController = new PointController(dayEventsListElement, onDataChange);
     pointController.render(point, destinations);
 
   });
@@ -65,12 +65,23 @@ export default class TripController {
   constructor(container) {
     this._container = container;
 
+    this._points = [];
+    this._destinations = null;
+
+
     this._sortComponent = new SortComponent();
     this._tripDaysComponent = new TripDaysComponent();
     this._noPointsComponent = new NoPointsComponent();
+
+    this._onDataChange = this._onDataChange.bind(this);
   }
 
   render(points, destinations) {
+    this._points = points;
+    this._destinations = destinations;
+
+    const isSortingOn = false;
+
     const container = this._container.getElement();
     render(container, this._sortComponent, RenderPosition.BEFOREEND);
 
@@ -80,12 +91,12 @@ export default class TripController {
     }
     const tripDaysElement = this._tripDaysComponent.getElement();
     render(container, this._tripDaysComponent, RenderPosition.BEFOREEND);
-    renderPoints(tripDaysElement, points, destinations);
+    renderPoints(tripDaysElement, points, destinations, isSortingOn, this._onDataChange);
 
     this._sortComponent.setSortTypeChangeHandler((sortType) => {
       const sortedPoints = getSortedPoints(points, sortType);
 
-      const isSortingOn = sortType !== SortType.EVENT ? true : false;
+      isSortingOn = sortType !== SortType.EVENT ? true : false;
       const dayTitle = this._sortComponent.getElement().querySelector(`.trip-sort__item`);
       if (isSortingOn) {
         dayTitle.innerHTML = ``;
@@ -94,8 +105,22 @@ export default class TripController {
       }
 
       tripDaysElement.innerHTML = ``;
-      renderPoints(tripDaysElement, sortedPoints, destinations, isSortingOn);
-    });
 
+      renderPoints(tripDaysElement, sortedPoints, destinations, isSortingOn, this._onDataChange);
+    });
+  }
+
+  _onDataChange(pointController, oldData, newData) {
+    const index = this._points.findIndex((it) => it === oldData);
+
+    if (index === -1) {
+      return;
+    }
+
+    this._points = []
+      .concat(
+          this._points.slice(0, index), newData, this._points.slice(index + 1)
+      );
+    pointController.render(this._points[index], this._destinations);
   }
 }
