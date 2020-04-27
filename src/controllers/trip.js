@@ -1,43 +1,11 @@
 import DayComponent from "../components/day.js";
-import EditPointComponent from "../components/edit-point.js";
-import PointComponent from "../components/point.js";
 import NoPointsComponent from "../components/no-points.js";
 import {render, RenderPosition} from "../utils/render.js";
 import SortComponent, {SortType} from "../components/sort.js";
+import PointController from "../controllers/point.js";
 import TripDaysComponent from "../components/trip-days.js";
 import {isDatesEqual} from "../utils/common.js";
 
-const renderPoint = (dayEventsListElement, point, destinations) => {
-  const pointComponent = new PointComponent(point);
-  const editPointComponent = new EditPointComponent(point, destinations);
-
-  const replacePointToEdit = () => {
-    dayEventsListElement.replaceChild(editPointComponent.getElement(), pointComponent.getElement());
-  };
-
-  const replaceEditToPoint = () => {
-    dayEventsListElement.replaceChild(pointComponent.getElement(), editPointComponent.getElement());
-  };
-  const onEscKeyDown = (evt) => {
-    const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
-
-    if (isEscKey) {
-      replaceEditToPoint();
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    }
-  };
-  pointComponent.setRollupButtonClickHandler(() => {
-    replacePointToEdit();
-    document.addEventListener(`keydown`, onEscKeyDown);
-  });
-  editPointComponent.setSubmitHandler((evt) => {
-    evt.preventDefault();
-    replaceEditToPoint();
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  });
-
-  render(dayEventsListElement, pointComponent, RenderPosition.BEFOREEND);
-};
 
 const renderPoints = (container, points, destinations, isSortingOn = false) => {
   let currentDay = null;
@@ -62,7 +30,9 @@ const renderPoints = (container, points, destinations, isSortingOn = false) => {
       dayEventsListElement = dayComponent.getElement().querySelector(`.trip-events__list`);
     }
 
-    renderPoint(dayEventsListElement, point, destinations);
+    const pointController = new PointController(dayEventsListElement);
+    pointController.render(point, destinations);
+
   });
 };
 const getSortedPoints = (points, sortType) => {
