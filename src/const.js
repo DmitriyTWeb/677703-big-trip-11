@@ -32,7 +32,7 @@ export const options = [
     name: `silentDriver`,
     title: `Silent driver`,
     price: 20,
-    type: `Taxi`,
+    type: `taxi`,
   },
   {
     name: `playDnB`,
@@ -50,7 +50,7 @@ export const options = [
     name: `noTV`,
     title: `No TV into`,
     price: 20,
-    type: `Bus`,
+    type: `bus`,
   },
   {
     name: `moreSpace`,
@@ -120,7 +120,7 @@ export const options = [
   },
   {
     name: `ownPlage`,
-    title: `ownPlage`,
+    title: `Own plage`,
     price: 120,
     type: `ship`,
   },

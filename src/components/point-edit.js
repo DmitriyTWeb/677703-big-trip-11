@@ -1,5 +1,5 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
-import {pointTypes, activityCategory} from "../mock/points.js";
+import {pointTypes, activityCategory, getRandomDescription} from "../mock/points.js";
 import {castTimeFormat, capitalizeFirstLetter} from "../utils/common.js";
 
 const formatTimeToEditPoint = (timestamp) => {
@@ -200,6 +200,7 @@ export default class EditPoint extends AbstractSmartComponent {
     this._submitHandler = null;
     this._favoriteHandler = null;
     this._typeChangeHandler = null;
+    this._destinationChangeHandler = null;
   }
 
   getTemplate() {
@@ -210,6 +211,7 @@ export default class EditPoint extends AbstractSmartComponent {
     this.setSubmitHandler(this._submitHandler);
     this.setFavoriteButtonClickHandler(this._favoriteHandler);
     this.setPointTypeChangeHandler(this._typeChangeHandler);
+    this.setDestinationChangeHandler(this._destinationChangeHandler);
   }
 
   rerender() {
@@ -217,7 +219,6 @@ export default class EditPoint extends AbstractSmartComponent {
   }
 
   reset() {
-    // const point = this._point;
     this.rerender();
   }
 
@@ -247,6 +248,18 @@ export default class EditPoint extends AbstractSmartComponent {
         handler(newType, newCategory);
       });
     });
+  }
+
+  setDestinationChangeHandler(handler) {
+    const element = this.getElement();
+    this._destinationChangeHandler = handler;
+
+    element.querySelector(`[name="event-destination"]`)
+      .addEventListener(`change`, (evt) => {
+        const newDestination = evt.target.value;
+        handler(newDestination, getRandomDescription());
+      });
+
   }
 
   _subscribeOnEvents() {

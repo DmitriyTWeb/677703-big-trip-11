@@ -98,4 +98,4 @@ const generatePoints = (count) => {
     .map(generatePoint);
 };
 
-export {generatePoint, generatePoints, pointTypes, activityCategory, destinations};
+export {generatePoint, generatePoints, pointTypes, activityCategory, destinations, getRandomDescription};

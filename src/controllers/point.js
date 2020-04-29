@@ -55,6 +55,13 @@ export default class Point {
       }));
     });
 
+    this._pointEditComponent.setDestinationChangeHandler((newDestination, newDescription) => {
+      this._onDataChange(this, point, Object.assign({}, point, {
+        destination: newDestination,
+        description: newDescription,
+      }));
+    });
+
 
     if (oldPointEditComponent && oldPointComponent) {
       replace(this._pointComponent, oldPointComponent);
