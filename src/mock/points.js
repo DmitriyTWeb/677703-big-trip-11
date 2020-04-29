@@ -76,9 +76,6 @@ const generatePoint = () => {
   const destination = destinations[getRandomIntegerNumber(0, destinations.length)];
   const isFavorite = Math.random() > 0.7 ? true : false;
   const inputPrice = getRandomIntegerNumber(2, 60);
-  const totalPointPrice = inputPrice + pointOptions.reduce((acc, current) => {
-    return acc + current.price;
-  }, 0);
   const images = getRandomImages();
 
   return {
@@ -88,7 +85,6 @@ const generatePoint = () => {
     startDate,
     endDate,
     inputPrice,
-    totalPointPrice,
     isFavorite,
     options: pointOptions,
     description: pointDescription,

@@ -21,7 +21,7 @@ const createPointTemplate = (point) => {
     destination,
     startDate,
     endDate,
-    totalPointPrice,
+    inputPrice,
     options,
   } = point;
 
@@ -47,7 +47,7 @@ const createPointTemplate = (point) => {
         </div>
 
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${totalPointPrice}</span>
+          &euro;&nbsp;<span class="event__price-value">${inputPrice}</span>
         </p>
 
         <h4 class="visually-hidden">Offers:</h4>
