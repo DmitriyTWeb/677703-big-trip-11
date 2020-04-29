@@ -1,6 +1,7 @@
 import EventsListComponent from "./components/events-list.js";
 import FiltersComponent from "./components/filters.js";
 import MenuComponent from "./components/menu.js";
+import {options} from "./const.js";
 import TripController from "./controllers/trip.js";
 import TripInfoComponent from "./components/trip-info.js";
 import {render, RenderPosition} from "./utils/render.js";
@@ -31,4 +32,4 @@ const eventsListComponent = new EventsListComponent();
 render(pageMainContainerElement, eventsListComponent, RenderPosition.BEFOREEND);
 
 const tripController = new TripController(eventsListComponent);
-tripController.render(points, destinations);
+tripController.render(points, destinations, options);

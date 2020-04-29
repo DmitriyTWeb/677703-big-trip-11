@@ -1,56 +1,8 @@
+import {options} from "../const.js";
+
 const pointTypes = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
 const activityCategory = [`Check-in`, `Sightseeing`, `Restaurant`];
 const destinations = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`];
-const options = [
-  {
-    name: `luggage`,
-    title: `Add luggage`,
-    price: 30,
-    type: `Taxi`,
-  },
-  {
-    name: `luggage`,
-    title: `Add luggage`,
-    price: 30,
-    type: `Bus`,
-  },
-  {
-    name: `luggage`,
-    title: `Add luggage`,
-    price: 30,
-    type: `Train`,
-  },
-  {
-    name: `comfort`,
-    title: `Switch to comfort class`,
-    price: 100,
-    type: `Flight`,
-  },
-  {
-    name: `meal`,
-    title: `Add meal`,
-    price: 15,
-    type: `Check-in`,
-  },
-  {
-    name: `seats`,
-    title: `Choose seats`,
-    price: 5,
-    type: `Flight`,
-  },
-  {
-    name: `seats`,
-    title: `Choose seats`,
-    price: 5,
-    type: `Ship`,
-  },
-  {
-    name: `train`,
-    title: `Travel by train`,
-    price: 40,
-    type: `Transport`,
-  }
-];
 
 const descriptions = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -108,12 +60,18 @@ const getRandomDescription = () => {
   return randomSents.join(` `);
 };
 
+const getRandomOptions = (pointType) => {
+  const typeOptions = options.filter((option) => option.type === pointType);
+
+  return typeOptions.filter(() => Math.random() > 0.5);
+};
+
 const generatePoint = () => {
   const type = getRandomArrayItem(pointTypes);
   const category = activityCategory.some((it) => it === type) ? `Activity` : `Transfer`;
   const startDate = getRandomDate();
   const endDate = new Date(startDate.getTime() + getRandomIntegerNumber(1000 * 60 * 20, 1000 * 60 * 60 * 24 * 3));
-  const pointOptions = options.filter((it) => it.type === type);
+  const pointOptions = getRandomOptions(type);
   const pointDescription = getRandomDescription(descriptions);
   const destination = destinations[getRandomIntegerNumber(0, destinations.length)];
   const isFavorite = Math.random() > 0.7 ? true : false;

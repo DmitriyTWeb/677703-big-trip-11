@@ -8,21 +8,23 @@ const Mode = {
 };
 
 export default class Point {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, onViewChange) {
     this._container = container;
     this._onDataChange = onDataChange;
+    this._onViewChange = onViewChange;
+    this._mode = Mode.DEFAULT;
 
     this._pointComponent = null;
     this._pointEditComponent = null;
     this._onEscKeydown = this._onEscKeydown.bind(this);
   }
 
-  render(point, destinations) {
+  render(point, destinations, options) {
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
 
     this._pointComponent = new PointComponent(point);
-    this._pointEditComponent = new PointEditComponent(point, destinations);
+    this._pointEditComponent = new PointEditComponent(point, destinations, options);
 
     this._pointComponent.setRollupButtonClickHandler(() => {
       this._replacePointToEdit();
@@ -51,15 +53,23 @@ export default class Point {
 
   }
 
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceEditToPoint();
+    }
+  }
+
   _replaceEditToPoint() {
     document.removeEventListener(`keydown`, this._onEscKeydown);
-
-    console.log(`this = `, this);
+    this._pointEditComponent.reset();
     replace(this._pointComponent, this._pointEditComponent);
+    this._mode = Mode.DEFAULT;
   }
 
   _replacePointToEdit() {
+    this._onViewChange();
     replace(this._pointEditComponent, this._pointComponent);
+    this._mode = Mode.EDIT;
   }
 
   _onEscKeydown(evt) {

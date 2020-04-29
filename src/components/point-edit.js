@@ -27,11 +27,12 @@ const createDestinationTemplate = (destination) => {
     `<option value="${destination}"></option>`
   );
 };
-const createOfferTemplate = (option) => {
+const createOtionTemplate = (option, isChecked) => {
   const {name, title, price} = option;
+  const checked = isChecked ? `checked` : ``;
   return (
     `<div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${name}-1" type="checkbox" name="event-offer-${name}" checked>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${name}-1" type="checkbox" name="event-offer-${name}" ${checked}>
       <label class="event__offer-label" for="event-offer-${name}-1">
         <span class="event__offer-title">${title}</span>
         &plus;
@@ -39,6 +40,15 @@ const createOfferTemplate = (option) => {
       </label>
     </div>`
   );
+};
+
+const createOtionsTemplate = (typeOptions, pointOptions) => {
+
+  return typeOptions.map((typeOption) => {
+    const isChecked = pointOptions.some((pointOption) => pointOption.name === typeOption.name);
+
+    return createOtionTemplate(typeOption, isChecked);
+  }).join(`\n`);
 };
 
 const createImagesTemplate = (images) => {
@@ -49,7 +59,7 @@ const createImagesTemplate = (images) => {
   }).join(`\n`);
 };
 
-const createEditPointTemplate = (point, destinations) => {
+const createEditPointTemplate = (point, destinations, typeOptions) => {
   const {category,
     type,
     destination,
@@ -78,7 +88,8 @@ const createEditPointTemplate = (point, destinations) => {
   const startTime = formatTimeToEditPoint(startDate);
   const endTime = formatTimeToEditPoint(endDate);
   const isFavoriteChecked = isFavorite ? `checked` : ``;
-  const offersTemplate = options.map((option) => createOfferTemplate(option)).join(`\n`);
+  // const offersTemplate = options.map((option) => createOfferTemplate(option)).join(`\n`);
+  const offersTemplate = createOtionsTemplate(typeOptions, options);
   const imagesTemplate = createImagesTemplate(images);
 
   return (
@@ -176,29 +187,33 @@ const createEditPointTemplate = (point, destinations) => {
 };
 
 export default class EditPoint extends AbstractSmartComponent {
-  constructor(point, destinations) {
+  constructor(point, destinations, options) {
     super();
 
     this._point = point;
     this._destinations = destinations;
+    this._options = options;
 
     this._submitHandler = null;
     this._favoriteHandler = null;
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._point, this._destinations);
+    return createEditPointTemplate(this._point, this._destinations, this._options);
   }
 
   recoveryListener() {
     this.setSubmitHandler(this._submitHandler);
     this.setFavoriteButtonClickHandler(this._favoriteHandler);
-
-    console.log(`recoveryListener`);
   }
 
   rerender() {
     super.rerender();
+  }
+
+  reset() {
+    // const point = this._point;
+    this.rerender();
   }
 
   setSubmitHandler(handler) {
