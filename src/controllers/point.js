@@ -14,17 +14,22 @@ export default class Point {
     this._onViewChange = onViewChange;
     this._mode = Mode.DEFAULT;
 
+    this._point = null;
+
     this._pointComponent = null;
     this._pointEditComponent = null;
     this._onEscKeydown = this._onEscKeydown.bind(this);
   }
 
   render(point, destinations, options) {
+    this._point = point;
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
 
+    const typeOptions = options.filter((option) => option.type === point.type);
+
     this._pointComponent = new PointComponent(point);
-    this._pointEditComponent = new PointEditComponent(point, destinations, options);
+    this._pointEditComponent = new PointEditComponent(point, destinations, typeOptions);
 
     this._pointComponent.setRollupButtonClickHandler(() => {
       this._replacePointToEdit();
@@ -40,6 +45,13 @@ export default class Point {
     this._pointEditComponent.setFavoriteButtonClickHandler(() => {
       this._onDataChange(this, point, Object.assign({}, point, {
         isFavorite: !point.isFavorite,
+      }));
+    });
+
+    this._pointEditComponent.setPointTypeChangeHandler((newType, newCategory) => {
+      this._onDataChange(this, point, Object.assign({}, point, {
+        category: newCategory,
+        type: newType,
       }));
     });
 

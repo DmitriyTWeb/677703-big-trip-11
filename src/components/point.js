@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {formatTime, getDuration} from "../utils/common.js";
+import {capitalizeFirstLetter, formatTime, getDuration} from "../utils/common.js";
 
 const createCheckedOptionsTemplate = (options) => {
   return options.map((option) => {
@@ -25,7 +25,7 @@ const createPointTemplate = (point) => {
     options,
   } = point;
 
-  const header = `${type} ${category.toLowerCase() === `activity` ? `in` : `to`} ${destination}`;
+  const header = `${capitalizeFirstLetter(type)} ${category.toLowerCase() === `activity` ? `in` : `to`} ${capitalizeFirstLetter(destination)}`;
   const duration = getDuration(startDate, endDate);
   const optionsTemplate = createCheckedOptionsTemplate(options);
 

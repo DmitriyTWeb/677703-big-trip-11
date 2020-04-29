@@ -1,6 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {pointTypes, activityCategory} from "../mock/points.js";
-import {castTimeFormat} from "../utils/common.js";
+import {castTimeFormat, capitalizeFirstLetter} from "../utils/common.js";
 
 const formatTimeToEditPoint = (timestamp) => {
   const date = castTimeFormat(timestamp.getDate());
@@ -81,14 +81,12 @@ const createEditPointTemplate = (point, destinations, typeOptions) => {
 
   const transferItemsTemplate = createEventTypeItemGroup(transferTypes);
   const activityItemsTemplate = createEventTypeItemGroup(activityTypes);
-
-  const header = `${type} ${category.toLowerCase() === `activity` ? `in` : `to`}`;
+  const header = `${capitalizeFirstLetter(type)} ${category.toLowerCase() === `activity` ? `in` : `to`}`;
   const destinationOptions = destinations.map((it) => createDestinationTemplate(it)).join(`\n`);
 
   const startTime = formatTimeToEditPoint(startDate);
   const endTime = formatTimeToEditPoint(endDate);
   const isFavoriteChecked = isFavorite ? `checked` : ``;
-  // const offersTemplate = options.map((option) => createOfferTemplate(option)).join(`\n`);
   const offersTemplate = createOtionsTemplate(typeOptions, options);
   const imagesTemplate = createImagesTemplate(images);
 
@@ -119,7 +117,12 @@ const createEditPointTemplate = (point, destinations, typeOptions) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${header}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination}" list="destination-list-1">
+            <input
+              class="event__input  event__input--destination"
+              id="event-destination-1" type="text"
+              name="event-destination"
+              value="${capitalizeFirstLetter(destination)}" list="destination-list-1"
+            >
             <datalist id="destination-list-1">
               ${destinationOptions}
             </datalist>
@@ -196,6 +199,7 @@ export default class EditPoint extends AbstractSmartComponent {
 
     this._submitHandler = null;
     this._favoriteHandler = null;
+    this._typeChangeHandler = null;
   }
 
   getTemplate() {
@@ -205,6 +209,7 @@ export default class EditPoint extends AbstractSmartComponent {
   recoveryListener() {
     this.setSubmitHandler(this._submitHandler);
     this.setFavoriteButtonClickHandler(this._favoriteHandler);
+    this.setPointTypeChangeHandler(this._typeChangeHandler);
   }
 
   rerender() {
@@ -227,5 +232,23 @@ export default class EditPoint extends AbstractSmartComponent {
       .addEventListener(`click`, handler);
 
     this._favoriteHandler = handler;
+  }
+
+  setPointTypeChangeHandler(handler) {
+    const element = this.getElement();
+    this._typeChangeHandler = handler;
+
+    const radioButtons = element.querySelectorAll(`[name="event-type"]`);
+
+    Array.from(radioButtons).forEach((button) => {
+      button.addEventListener(`change`, (evt) => {
+        const newType = evt.target.value;
+        const newCategory = activityCategory.some((it) => it === newType) ? `activity` : `transfer`;
+        handler(newType, newCategory);
+      });
+    });
+  }
+
+  _subscribeOnEvents() {
   }
 }

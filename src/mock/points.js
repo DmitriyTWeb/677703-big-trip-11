@@ -1,8 +1,8 @@
 import {options} from "../const.js";
 
-const pointTypes = [`Taxi`, `Bus`, `Train`, `Ship`, `Transport`, `Drive`, `Flight`, `Check-in`, `Sightseeing`, `Restaurant`];
-const activityCategory = [`Check-in`, `Sightseeing`, `Restaurant`];
-const destinations = [`Amsterdam`, `Geneva`, `Chamonix`, `Saint Petersburg`];
+const pointTypes = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
+const activityCategory = [`check-in`, `sightseeing`, `restaurant`];
+const destinations = [`amsterdam`, `geneva`, `chamonix`, `saint Petersburg`];
 
 const descriptions = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -68,7 +68,7 @@ const getRandomOptions = (pointType) => {
 
 const generatePoint = () => {
   const type = getRandomArrayItem(pointTypes);
-  const category = activityCategory.some((it) => it === type) ? `Activity` : `Transfer`;
+  const category = activityCategory.some((it) => it === type) ? `activity` : `transfer`;
   const startDate = getRandomDate();
   const endDate = new Date(startDate.getTime() + getRandomIntegerNumber(1000 * 60 * 20, 1000 * 60 * 60 * 24 * 3));
   const pointOptions = getRandomOptions(type);

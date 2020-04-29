@@ -31,8 +31,7 @@ const renderPoints = (container, points, destinations, options, isSortingOn = fa
     }
 
     const pointController = new PointController(dayEventsListElement, onDataChange, onViewChange);
-    const typeOptions = options.filter((option) => option.type === point.type);
-    pointController.render(point, destinations, typeOptions);
+    pointController.render(point, destinations, options);
 
     return pointController;
   });
@@ -71,7 +70,7 @@ export default class TripController {
 
     this._points = [];
     this._destinations = null;
-    this._options = [];
+    this._typeOptions = [];
     this._renderedPointControllers = [];
 
     this._sortComponent = new SortComponent();
@@ -85,7 +84,7 @@ export default class TripController {
   render(points, destinations, options) {
     this._points = points;
     this._destinations = destinations;
-    this._options = options;
+    this._typeOptions = options;
 
     const isSortingOn = false;
 
@@ -100,7 +99,7 @@ export default class TripController {
     render(container, this._tripDaysComponent, RenderPosition.BEFOREEND);
 
     this._renderedPointControllers = renderPoints(
-        tripDaysElement, this._points, this._destinations, this._options, isSortingOn,
+        tripDaysElement, this._points, this._destinations, this._typeOptions, isSortingOn,
         this._onDataChange, this._onViewChange);
 
     this._sortComponent.setSortTypeChangeHandler((sortType) => {
@@ -117,7 +116,7 @@ export default class TripController {
       tripDaysElement.innerHTML = ``;
 
       this._renderedPointControllers = renderPoints(
-          tripDaysElement, sortedPoints, this._destinations, this._options, isSortingOn,
+          tripDaysElement, sortedPoints, this._destinations, this._typeOptions, isSortingOn,
           this._onDataChange, this._onViewChange);
     });
   }
@@ -133,7 +132,7 @@ export default class TripController {
       .concat(
           this._points.slice(0, index), newData, this._points.slice(index + 1)
       );
-    pointController.render(this._points[index], this._destinations);
+    pointController.render(this._points[index], this._destinations, this._typeOptions);
   }
 
   _onViewChange() {
