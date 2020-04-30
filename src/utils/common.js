@@ -13,14 +13,10 @@ export const formatDate = (date) => {
 };
 
 export const getDuration = (startDate, endDate) => {
-  const start = new moment(startDate);
-  const end = new moment(endDate);
+  const start = moment(startDate);
+  const end = moment(endDate);
 
   const duration = moment.duration(end.diff(start));
-
-  // let days = duration.days();
-  // let hours = duration.hours();
-  // let minutes = duration.minutes();
 
   let days = duration.days();
   let hours = duration.hours();
@@ -32,10 +28,8 @@ export const getDuration = (startDate, endDate) => {
 
 
   return `${days}${hours}${minutes}`;
-
-
-  return duration.humanize();
 };
+
 export const isDatesEqual = (firstDate, secondDate) => {
   return (firstDate.getYear() === secondDate.getYear())
     && (firstDate.getMonth() === secondDate.getMonth())

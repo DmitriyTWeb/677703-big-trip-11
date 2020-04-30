@@ -1,5 +1,4 @@
 import AbstractComponent from "./abstract-component.js";
-import {MONTHS} from "../const.js";
 import {formatDate} from "../utils/common.js";
 
 const createDayInfoContentTemplate = (date, dayNumber) => {

@@ -210,6 +210,7 @@ export default class EditPoint extends AbstractSmartComponent {
     this._priceChangeHandler = null;
 
     this._applyFlatpickr();
+    this._subscribeOnEvents();
   }
 
   getTemplate() {
@@ -218,10 +219,7 @@ export default class EditPoint extends AbstractSmartComponent {
 
   recoveryListener() {
     this.setSubmitHandler(this._submitHandler);
-    this.setFavoriteButtonClickHandler(this._favoriteHandler);
-    this.setPointTypeChangeHandler(this._typeChangeHandler);
-    this.setDestinationChangeHandler(this._destinationChangeHandler);
-    this.setEventPriceChangeHandler(this._priceChangeHandler);
+    this._subscribeOnEvents();
   }
 
   rerender() {
@@ -313,5 +311,37 @@ export default class EditPoint extends AbstractSmartComponent {
   }
 
   _subscribeOnEvents() {
+    const element = this.getElement();
+
+    const radioButtons = element.querySelectorAll(`[name="event-type"]`);
+    Array.from(radioButtons).forEach((button) => {
+      button.addEventListener(`change`, (evt) => {
+        const newType = evt.target.value;
+        const newCategory = activityCategory.some((it) => it === newType) ? `activity` : `transfer`;
+        this._point.type = newType;
+        this._point.category = newCategory;
+
+        this.rerender();
+      });
+    });
+
+    element.querySelector(`[name="event-price"]`)
+      .addEventListener(`change`, (evt) => {
+        const newPrice = evt.target.value;
+        this._point.inputPrice = newPrice;
+
+        this.rerender();
+      });
+
+    element.querySelector(`[name="event-destination"]`)
+      .addEventListener(`change`, (evt) => {
+        const newDestination = evt.target.value;
+        const newDescription = getRandomDescription();
+        this._point.destination = newDestination;
+        this._point.description = newDescription;
+
+        this.rerender();
+      });
   }
+
 }
