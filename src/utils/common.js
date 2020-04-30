@@ -1,37 +1,40 @@
-export const castTimeFormat = (value) => {
-  return value < 10 ? `0${value}` : String(value);
+import moment from "moment";
+
+const leadingZero = (value) => {
+  return (value < 10 && value !== 0) ? `0${value}` : String(value);
 };
+
 export const formatTime = (date) => {
-  const hours = castTimeFormat(date.getHours());
-  const minutes = castTimeFormat(date.getMinutes());
-
-  return `${hours}:${minutes}`;
+  return moment(date).format(`hh:mm`);
 };
-export const formatDuration = (duration) => {
-  const oneDayMS = 1000 * 60 * 60 * 24;
-  const oneHourMS = 1000 * 60 * 60;
-  const oneMinuteMS = 1000 * 60;
 
-  if (duration < 0) {
-    return `--D --H --M`;
-  }
+export const formatDate = (date) => {
+  return moment(date).format(`MMM DD`);
+};
 
-  let days = `${castTimeFormat(Math.floor(duration / oneDayMS))}D`;
-  let hours = `${castTimeFormat(Math.floor(duration % oneDayMS / oneHourMS))}H `;
-  let minutes = `${castTimeFormat(Math.floor(duration % oneHourMS / oneMinuteMS))}M`;
+export const getDuration = (startDate, endDate) => {
+  const start = new moment(startDate);
+  const end = new moment(endDate);
 
-  days = days === `00D` ? `` : `${days} `;
+  const duration = moment.duration(end.diff(start));
 
-  if (days === ``) {
-    hours = hours === `00H ` ? `` : `${hours}`;
-  }
+  // let days = duration.days();
+  // let hours = duration.hours();
+  // let minutes = duration.minutes();
+
+  let days = duration.days();
+  let hours = duration.hours();
+  let minutes = duration.minutes();
+
+  days = days ? `${leadingZero(days)}D ` : ``;
+  hours = hours ? `${leadingZero(hours)}H ` : ``;
+  minutes = minutes ? `${leadingZero(minutes)}M` : ``;
+
 
   return `${days}${hours}${minutes}`;
-};
-export const getDuration = (startDate, endDate) => {
-  const duration = endDate.getTime() - startDate.getTime();
 
-  return formatDuration(duration);
+
+  return duration.humanize();
 };
 export const isDatesEqual = (firstDate, secondDate) => {
   return (firstDate.getYear() === secondDate.getYear())

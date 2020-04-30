@@ -1,16 +1,10 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {pointTypes, activityCategory, getRandomDescription} from "../mock/points.js";
-import {castTimeFormat, capitalizeFirstLetter} from "../utils/common.js";
+import {capitalizeFirstLetter} from "../utils/common.js";
+import flatpickr from "flatpickr";
 
-const formatTimeToEditPoint = (timestamp) => {
-  const date = castTimeFormat(timestamp.getDate());
-  const month = castTimeFormat(timestamp.getMonth());
-  const year = `${timestamp.getFullYear()}`.substring(2);
-  const hours = castTimeFormat(timestamp.getHours());
-  const minutes = castTimeFormat(timestamp.getMinutes());
+import "flatpickr/dist/flatpickr.min.css";
 
-  return `${date}/${month}/${year} ${hours}:${minutes}`;
-};
 const createEventTypeItemGroup = (types) => {
   return types.map((type) => {
     type = type.toLowerCase();
@@ -84,8 +78,6 @@ const createEditPointTemplate = (point, destinations, typeOptions) => {
   const header = `${capitalizeFirstLetter(type)} ${category.toLowerCase() === `activity` ? `in` : `to`}`;
   const destinationOptions = destinations.map((it) => createDestinationTemplate(it)).join(`\n`);
 
-  const startTime = formatTimeToEditPoint(startDate);
-  const endTime = formatTimeToEditPoint(endDate);
   const isFavoriteChecked = isFavorite ? `checked` : ``;
   const offersTemplate = createOtionsTemplate(typeOptions, options);
   const imagesTemplate = createImagesTemplate(images);
@@ -132,12 +124,24 @@ const createEditPointTemplate = (point, destinations, typeOptions) => {
             <label class="visually-hidden" for="event-start-time-1">
               From
             </label>
-            <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${startTime}">
+            <input
+              class="event__input  event__input--time"
+              id="event-start-time-1"
+              type="text"
+              name="event-start-time"
+              value="${startDate}"
+            >
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">
               To
             </label>
-            <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${endTime}">
+            <input
+              class="event__input  event__input--time"
+              id="event-end-time-1"
+              type="text"
+              name="event-end-time"
+              value="${endDate}"
+            >
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -196,11 +200,16 @@ export default class EditPoint extends AbstractSmartComponent {
     this._point = point;
     this._destinations = destinations;
     this._options = options;
+    this._flatpickrStart = null;
+    this._flatpickrEnd = null;
 
     this._submitHandler = null;
     this._favoriteHandler = null;
     this._typeChangeHandler = null;
     this._destinationChangeHandler = null;
+    this._priceChangeHandler = null;
+
+    this._applyFlatpickr();
   }
 
   getTemplate() {
@@ -212,10 +221,13 @@ export default class EditPoint extends AbstractSmartComponent {
     this.setFavoriteButtonClickHandler(this._favoriteHandler);
     this.setPointTypeChangeHandler(this._typeChangeHandler);
     this.setDestinationChangeHandler(this._destinationChangeHandler);
+    this.setEventPriceChangeHandler(this._priceChangeHandler);
   }
 
   rerender() {
     super.rerender();
+
+    this._applyFlatpickr();
   }
 
   reset() {
@@ -226,6 +238,35 @@ export default class EditPoint extends AbstractSmartComponent {
     this.getElement().querySelector(`form`).addEventListener(`submit`, handler);
 
     this._submitHandler = handler;
+  }
+
+  _applyFlatpickr() {
+    if (this._flatpickrStart || this._flatpickrEnd) {
+      this._flatpickrStart.destroy();
+      this._flatpickrEnd.destroy();
+      this._flatpickrStart = null;
+      this._flatpickrEnd = null;
+    }
+
+    const startDateElement = this.getElement().querySelector(`[name="event-start-time"]`);
+    this._flatpickrStart = flatpickr(startDateElement, {
+      altInput: true,
+      allowInput: true,
+      altFormat: `d/m/Y H:i`,
+      dateFormat: `d/m/Y H:i`,
+
+      defaultDate: this._point.startDate || `today`
+    });
+
+    const endDateElement = this.getElement().querySelector(`[name="event-end-time"]`);
+    this._flatpickrEnd = flatpickr(endDateElement, {
+      altInput: true,
+      allowInput: true,
+      altFormat: `d/m/Y H:i`,
+      dateFormat: `d/m/Y H:i`,
+
+      defaultDate: this._point.endDate || `today`
+    });
   }
 
   setFavoriteButtonClickHandler(handler) {
@@ -250,6 +291,16 @@ export default class EditPoint extends AbstractSmartComponent {
     });
   }
 
+  setEventPriceChangeHandler(handler) {
+    this._priceChangeHandler = handler;
+
+    this.getElement().querySelector(`[name="event-price"]`)
+      .addEventListener(`change`, (evt) => {
+        const newPrice = evt.target.value;
+        handler(newPrice);
+      });
+  }
+
   setDestinationChangeHandler(handler) {
     const element = this.getElement();
     this._destinationChangeHandler = handler;
@@ -259,7 +310,6 @@ export default class EditPoint extends AbstractSmartComponent {
         const newDestination = evt.target.value;
         handler(newDestination, getRandomDescription());
       });
-
   }
 
   _subscribeOnEvents() {

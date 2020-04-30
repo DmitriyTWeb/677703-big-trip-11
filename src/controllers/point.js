@@ -62,6 +62,11 @@ export default class Point {
       }));
     });
 
+    this._pointEditComponent.setEventPriceChangeHandler((newPrice) => {
+      this._onDataChange(this, point, Object.assign({}, point, {
+        inputPrice: newPrice,
+      }));
+    });
 
     if (oldPointEditComponent && oldPointComponent) {
       replace(this._pointComponent, oldPointComponent);

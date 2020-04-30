@@ -1,14 +1,12 @@
 import AbstractComponent from "./abstract-component.js";
 import {MONTHS} from "../const.js";
-import {castTimeFormat} from "../utils/common.js";
+import {formatDate} from "../utils/common.js";
 
 const createDayInfoContentTemplate = (date, dayNumber) => {
-  const month = MONTHS[date.getMonth()];
-
   return (
     `
     <span class="day__counter">${dayNumber}</span>
-    <time class="day__date" datetime="${date.toISOString()}">${month} ${castTimeFormat(date.getDate())}</time>
+    <time class="day__date" datetime="${date.toISOString()}">${formatDate(date)}</time>
     `
   );
 };
