@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {formatTime, getDuration} from "../utils/common.js";
+import {capitalizeFirstLetter, formatTime, getDuration} from "../utils/common.js";
 
 const createCheckedOptionsTemplate = (options) => {
   return options.map((option) => {
@@ -21,11 +21,11 @@ const createPointTemplate = (point) => {
     destination,
     startDate,
     endDate,
-    totalPointPrice,
+    inputPrice,
     options,
   } = point;
 
-  const header = `${type} ${category.toLowerCase() === `activity` ? `in` : `to`} ${destination}`;
+  const header = `${capitalizeFirstLetter(type)} ${category.toLowerCase() === `activity` ? `in` : `to`} ${capitalizeFirstLetter(destination)}`;
   const duration = getDuration(startDate, endDate);
   const optionsTemplate = createCheckedOptionsTemplate(options);
 
@@ -47,7 +47,7 @@ const createPointTemplate = (point) => {
         </div>
 
         <p class="event__price">
-          &euro;&nbsp;<span class="event__price-value">${totalPointPrice}</span>
+          &euro;&nbsp;<span class="event__price-value">${inputPrice}</span>
         </p>
 
         <h4 class="visually-hidden">Offers:</h4>
@@ -76,6 +76,7 @@ export default class Point extends AbstractComponent {
   }
 
   setRollupButtonClickHandler(cb) {
-    this.getElement().querySelector(`.event__rollup-btn`).addEventListener(`click`, cb);
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, cb);
   }
 }

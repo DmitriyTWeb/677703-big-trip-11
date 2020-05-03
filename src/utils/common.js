@@ -38,3 +38,7 @@ export const isDatesEqual = (firstDate, secondDate) => {
     && (firstDate.getMonth() === secondDate.getMonth())
     && (firstDate.getDate() === secondDate.getDate());
 };
+
+export const capitalizeFirstLetter = (str) => {
+  return `${str[0].toUpperCase()}${str.slice(1)}`;
+};

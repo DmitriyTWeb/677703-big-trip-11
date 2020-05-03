@@ -44,12 +44,20 @@ const getRoute = (points) => {
 
   return route;
 };
+
+const getPointCost = (point) => {
+  const optionsCost = point.options.reduce((acc, current) => {
+    return acc + current.price;
+  }, 0);
+  return point.inputPrice + optionsCost;
+};
+
 const getTotalCost = (points) => {
   if (points.length === 0) {
     return 0;
   }
-  return points
-    .map((point) => point.totalPointPrice)
+
+  return points.map((point) => getPointCost(point))
     .reduce((summ, current) => summ + current, 0);
 };
 const createTripInfoTemplate = (points) => {
