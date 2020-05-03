@@ -13,6 +13,12 @@ const MONTHS = [
   `dec`
 ];
 
+export const FilterType = {
+  EVERYTHING: `everything`,
+  PAST: `past`,
+  FUTURE: `future`
+};
+
 export {MONTHS};
 
 export const options = [

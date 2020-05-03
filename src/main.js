@@ -1,12 +1,12 @@
 import EventsListComponent from "./components/events-list.js";
-import FiltersComponent from "./components/filters.js";
+import FilterController from "./controllers/filter.js";
 import PointsModel from "./models/points.js";
 import MenuComponent from "./components/menu.js";
 import {options} from "./const.js";
 import TripController from "./controllers/trip.js";
 import TripInfoComponent from "./components/trip-info.js";
 import {render, RenderPosition} from "./utils/render.js";
-import {generateFilters} from "./mock/filters.js";
+// import {generateFilters} from "./mock/filters.js";
 import {generatePoints, destinations} from "./mock/points.js";
 
 
@@ -20,7 +20,6 @@ const menuTitleElement = pageHeaderElement.querySelector(`.trip-controls > h2:fi
 const menuComponent = new MenuComponent();
 render(menuTitleElement, menuComponent, RenderPosition.AFTER);
 
-const filters = generateFilters();
 const points = generatePoints(POINTS_COUNT)
   .slice().sort(
       (first, second) => first.startDate.getTime() - second.startDate.getTime()
@@ -31,7 +30,10 @@ pointsModel.setPoints(points);
 
 const filterTitleElement = pageHeaderElement.querySelector(`.trip-controls > h2:last-child`);
 render(tripMainElement, new TripInfoComponent(points), RenderPosition.AFTERBEGIN);
-render(filterTitleElement, new FiltersComponent(filters), RenderPosition.AFTER);
+
+const filtersController = new FilterController(filterTitleElement, pointsModel);
+filtersController.render();
+// render(filterTitleElement, new FiltersComponent(filters), RenderPosition.AFTER);
 
 const pageMainContainerElement = pageMainElement.querySelector(`.page-body__container`);
 
