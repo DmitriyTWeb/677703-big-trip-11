@@ -86,7 +86,7 @@ export default class TripController {
     this._destinations = destinations;
     this._typeOptions = options;
 
-    const isSortingOn = false;
+    let isSortingOn = false;
 
     const container = this._container.getElement();
     render(container, this._sortComponent, RenderPosition.BEFOREEND);

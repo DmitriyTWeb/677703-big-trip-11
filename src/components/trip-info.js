@@ -1,5 +1,6 @@
+
 import AbstractComponent from "./abstract-component.js";
-import {MONTHS} from "../const.js";
+import moment from "moment";
 
 const sortPoints = (points) => {
   // сортирует точки по дате от меньшей к большей
@@ -22,9 +23,9 @@ const getRouteDates = (points) => {
   let routeDates = ``;
 
   if (startDate.getMonth() === endDate.getMonth()) {
-    routeDates = `${MONTHS[startDate.getMonth()].toUpperCase()} ${startDate.getDate()} — ${endDate.getDate()}`;
+    routeDates = `${moment(startDate).format(`MMM DD`)}`;
   } else {
-    routeDates = `${MONTHS[startDate.getMonth()].toUpperCase()} ${startDate.getDate()} — ${MONTHS[endDate.getMonth()].toUpperCase()} ${endDate.getDate()}`;
+    routeDates = `${moment(startDate).format(`MMM DD `)} — ${moment(endDate).format(`MMM DD`)}`;
   }
 
   return routeDates;
