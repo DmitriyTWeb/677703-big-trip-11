@@ -79,6 +79,7 @@ const generatePoint = () => {
   const images = getRandomImages();
 
   return {
+    id: String(new Date() + Math.random()),
     category,
     type,
     destination,
