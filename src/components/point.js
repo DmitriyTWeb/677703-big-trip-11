@@ -1,5 +1,5 @@
 import AbstractComponent from "./abstract-component.js";
-import {capitalizeFirstLetter, formatTime, getDuration} from "../utils/common.js";
+import {capitalizeFirstLetter, formatTime, getDuration, getPointCategory} from "../utils/common.js";
 
 const createCheckedOptionsTemplate = (options) => {
   return options.map((option) => {
@@ -16,7 +16,7 @@ const createCheckedOptionsTemplate = (options) => {
 };
 
 const createPointTemplate = (point) => {
-  const {category,
+  const {
     type,
     destination,
     startDate,
@@ -24,10 +24,14 @@ const createPointTemplate = (point) => {
     inputPrice,
     options,
   } = point;
+  const pointCategory = getPointCategory(type);
+  const destinationName = destination.hasOwnProperty(`name`) ? destination.name : ``;
 
-  const header = `${capitalizeFirstLetter(type)} ${category.toLowerCase() === `activity` ? `in` : `to`} ${capitalizeFirstLetter(destination)}`;
+  const header = `${capitalizeFirstLetter(type)} ${pointCategory.toLowerCase() === `activity` ? `in` : `to`} ${capitalizeFirstLetter(destinationName)}`;
   const duration = getDuration(startDate, endDate);
   const optionsTemplate = createCheckedOptionsTemplate(options);
+  const startTime = new Date(startDate);
+  const endTime = new Date(endDate);
 
   return (
     `<li class="trip-events__item">
@@ -39,9 +43,9 @@ const createPointTemplate = (point) => {
 
         <div class="event__schedule">
           <p class="event__time">
-            <time class="event__start-time" datetime="${startDate.toISOString()}">${formatTime(startDate)}</time>
+            <time class="event__start-time" datetime="${startTime.toISOString()}">${formatTime(startTime)}</time>
             &mdash;
-            <time class="event__end-time" datetime="${endDate.toISOString()}">${formatTime(endDate)}</time>
+            <time class="event__end-time" datetime="${endTime.toISOString()}">${formatTime(endTime)}</time>
           </p>
           <p class="event__duration">${duration}</p>
         </div>

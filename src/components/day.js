@@ -2,6 +2,7 @@ import AbstractComponent from "./abstract-component.js";
 import {formatDate} from "../utils/common.js";
 
 const createDayInfoContentTemplate = (date, dayNumber) => {
+  date = new Date(date);
   return (
     `
     <span class="day__counter">${dayNumber}</span>

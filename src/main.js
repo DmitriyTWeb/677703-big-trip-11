@@ -1,12 +1,11 @@
 import EventsListComponent from "./components/events-list.js";
 import FilterController from "./controllers/filter.js";
 import PointsModel from "./models/points.js";
-import MenuComponent from "./components/menu.js";
-import {options} from "./const.js";
+import MenuComponent, {MenuItem} from "./components/menu.js";
+import {allTypesOptions} from "./const.js";
 import TripController from "./controllers/trip.js";
 import TripInfoComponent from "./components/trip-info.js";
 import {render, RenderPosition} from "./utils/render.js";
-// import {generateFilters} from "./mock/filters.js";
 import {generatePoints, destinations} from "./mock/points.js";
 
 
@@ -20,10 +19,7 @@ const menuTitleElement = pageHeaderElement.querySelector(`.trip-controls > h2:fi
 const menuComponent = new MenuComponent();
 render(menuTitleElement, menuComponent, RenderPosition.AFTER);
 
-const points = generatePoints(POINTS_COUNT)
-  .slice().sort(
-      (first, second) => first.startDate.getTime() - second.startDate.getTime()
-  );
+const points = generatePoints(POINTS_COUNT);
 
 const pointsModel = new PointsModel();
 pointsModel.setPoints(points);
@@ -33,7 +29,6 @@ render(tripMainElement, new TripInfoComponent(points), RenderPosition.AFTERBEGIN
 
 const filtersController = new FilterController(filterTitleElement, pointsModel);
 filtersController.render();
-// render(filterTitleElement, new FiltersComponent(filters), RenderPosition.AFTER);
 
 const pageMainContainerElement = pageMainElement.querySelector(`.page-body__container`);
 
@@ -41,4 +36,21 @@ const eventsListComponent = new EventsListComponent();
 render(pageMainContainerElement, eventsListComponent, RenderPosition.BEFOREEND);
 
 const tripController = new TripController(eventsListComponent, pointsModel);
-tripController.render(destinations, options);
+tripController.render(destinations, allTypesOptions);
+
+menuComponent.setOnClick((menuItem) => {
+  switch (menuItem) {
+    case MenuItem.TABLE:
+      menuComponent.setActiveItem(MenuItem.TABLE);
+      break;
+    case MenuItem.STATS:
+      menuComponent.setActiveItem(MenuItem.STATS);
+      break;
+  }
+});
+
+const newEventButton = pageHeaderElement.querySelector(`.trip-main__event-add-btn`);
+newEventButton.addEventListener(`click`, () => {
+  pointsModel.setFilterResetHandler(filtersController.resetFilter);
+  tripController.createPoint();
+});

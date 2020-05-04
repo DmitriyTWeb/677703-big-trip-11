@@ -1,3 +1,4 @@
+import {activityCategory, allTypesOptions} from "../const.js";
 import moment from "moment";
 
 const leadingZero = (value) => {
@@ -29,13 +30,25 @@ export const getDuration = (startDate, endDate) => {
 
   return `${days}${hours}${minutes}`;
 };
-
+export const getPointCategory = (pointType) => {
+  return activityCategory.some((it) => it === pointType) ? `activity` : `transfer`;
+};
 export const isDatesEqual = (firstDate, secondDate) => {
+  firstDate = new Date(firstDate);
+  secondDate = new Date(secondDate);
   return (firstDate.getYear() === secondDate.getYear())
     && (firstDate.getMonth() === secondDate.getMonth())
     && (firstDate.getDate() === secondDate.getDate());
 };
 
 export const capitalizeFirstLetter = (str) => {
+  if (str.length === 0) {
+    return ``;
+  }
   return `${str[0].toUpperCase()}${str.slice(1)}`;
+};
+
+export const getTypeOptions = (type) => {
+  const typeOptions = allTypesOptions.find((item) => item.type === type);
+  return typeOptions ? typeOptions : {};
 };

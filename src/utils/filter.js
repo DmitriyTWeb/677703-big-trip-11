@@ -2,16 +2,16 @@ import {FilterType} from "../const.js";
 
 const getPastPoints = (points, nowDate) => {
   return points
-      .filter((point) => point.endDate.getTime() < nowDate.getTime());
+      .filter((point) => point.endDate < nowDate);
 };
 
 const getFuturePoint = (points, nowDate) => {
   return points
-    .filter((point) => point.startDate.getTime() > nowDate.getTime());
+    .filter((point) => point.startDate > nowDate);
 };
 
 export const getPointsByFilter = (points, filterType) => {
-  const nowDate = new Date();
+  const nowDate = new Date().getTime();
 
   switch (filterType) {
     case FilterType.EVERYTHING:

@@ -53,4 +53,8 @@ export default class Filters extends AbstractComponent {
       handler(filterName);
     });
   }
+
+  resetFilter() {
+    this.getElement().querySelector(`#filter-everything`).checked = true;
+  }
 }
