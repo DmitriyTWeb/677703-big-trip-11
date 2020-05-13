@@ -3,6 +3,7 @@ import FilterController from "./controllers/filter.js";
 import PointsModel from "./models/points.js";
 import MenuComponent, {MenuItem} from "./components/menu.js";
 import {allTypesOptions} from "./const.js";
+import StatisticsComponent from "./components/statistics.js";
 import TripController from "./controllers/trip.js";
 import TripInfoComponent from "./components/trip-info.js";
 import {render, RenderPosition} from "./utils/render.js";
@@ -38,19 +39,38 @@ render(pageMainContainerElement, eventsListComponent, RenderPosition.BEFOREEND);
 const tripController = new TripController(eventsListComponent, pointsModel);
 tripController.render(destinations, allTypesOptions);
 
+const dateTo = new Date();
+const dateFrom = (() => {
+  const d = new Date(dateTo);
+  d.setDate(d.getDate() - 7);
+  return d;
+})();
+const statisticsComponent = new StatisticsComponent();
+render(pageMainContainerElement, statisticsComponent, RenderPosition.BEFOREEND);
+statisticsComponent.hide();
+
 menuComponent.setOnClick((menuItem) => {
+  console.log(`setOnclick`);
   switch (menuItem) {
     case MenuItem.TABLE:
+      console.log(`${menuItem} is pressed`);
       menuComponent.setActiveItem(MenuItem.TABLE);
+      statisticsComponent.hide();
+      tripController.show();
       break;
     case MenuItem.STATS:
+      console.log(`${menuItem} is pressed`);
       menuComponent.setActiveItem(MenuItem.STATS);
+      statisticsComponent.show();
+      tripController.hide();
       break;
   }
 });
 
 const newEventButton = pageHeaderElement.querySelector(`.trip-main__event-add-btn`);
 newEventButton.addEventListener(`click`, () => {
+  statisticsComponent.hide();
+  tripController.show();
   pointsModel.setFilterResetHandler(filtersController.resetFilter);
   tripController.createPoint();
 });
