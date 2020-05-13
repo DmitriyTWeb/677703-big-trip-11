@@ -1,8 +1,8 @@
-import {options} from "../const.js";
+import {capitalizeFirstLetter, getPointCategory} from "../utils/common.js";
+import {destinationNames} from "../const.js";
+import {allTypesOptions} from "../const.js";
 
 const pointTypes = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
-const activityCategory = [`check-in`, `sightseeing`, `restaurant`];
-const destinations = [`amsterdam`, `geneva`, `chamonix`, `saint Petersburg`];
 
 const descriptions = [
   `Lorem ipsum dolor sit amet, consectetur adipiscing elit.`,
@@ -35,19 +35,22 @@ const getRandomDate = () => {
   const diffValue = sign * getRandomIntegerNumber(0, 3);
 
   targetDate.setDate(targetDate.getDate() + diffValue);
-  targetDate.setTime(targetDate.getTime() + getRandomIntegerNumber(0, 1000 * 60 * 60));
-  return targetDate;
+
+  return targetDate.getTime();
 };
 
-const getRandomImages = () => {
-  const imgCount = getRandomIntegerNumber(0, 4);
-  const images = [];
+const getRandomPictures = (number) => {
+  const quantity = getRandomIntegerNumber(0, number);
+  const pictures = [];
 
-  for (let i = 0; i < imgCount; i++) {
-    images.push(`http://picsum.photos/248/152?r=${Math.random()};`);
+  for (let i = 0; i < quantity; i++) {
+    pictures.push({
+      "src": `http://picsum.photos/248/152?r=${Math.random()};`,
+      "description": getRandomDescription(descriptions)[0],
+    });
   }
 
-  return images;
+  return pictures;
 };
 
 const getRandomDescription = () => {
@@ -61,25 +64,36 @@ const getRandomDescription = () => {
 };
 
 const getRandomOptions = (pointType) => {
-  const typeOptions = options.filter((option) => option.type === pointType);
+  const index = allTypesOptions.findIndex((option) => option.type === pointType);
 
-  return typeOptions.filter(() => Math.random() > 0.5);
+  if (index === -1) {
+    return [];
+  }
+
+  return allTypesOptions[index].options.filter(() => Math.random() > 0.5);
 };
+
+const generateDestination = (name) => {
+  return {
+    "description": getRandomDescription(descriptions),
+    "name": capitalizeFirstLetter(name),
+    "pictures": getRandomPictures(5),
+  };
+};
+
+const destinations = destinationNames.map((name) => generateDestination(name));
 
 const generatePoint = () => {
   const type = getRandomArrayItem(pointTypes);
-  const category = activityCategory.some((it) => it === type) ? `activity` : `transfer`;
   const startDate = getRandomDate();
-  const endDate = new Date(startDate.getTime() + getRandomIntegerNumber(1000 * 60 * 20, 1000 * 60 * 60 * 24 * 3));
+  const endDate = (new Date(startDate).getTime() + getRandomIntegerNumber(1000 * 60 * 20, 1000 * 60 * 60 * 24 * 3));
   const pointOptions = getRandomOptions(type);
-  const pointDescription = getRandomDescription(descriptions);
   const destination = destinations[getRandomIntegerNumber(0, destinations.length)];
   const isFavorite = Math.random() > 0.7 ? true : false;
   const inputPrice = getRandomIntegerNumber(2, 60);
-  const images = getRandomImages();
 
   return {
-    category,
+    id: String(new Date().getTime() + Math.random()),
     type,
     destination,
     startDate,
@@ -87,8 +101,6 @@ const generatePoint = () => {
     inputPrice,
     isFavorite,
     options: pointOptions,
-    description: pointDescription,
-    images,
   };
 };
 
@@ -98,4 +110,11 @@ const generatePoints = (count) => {
     .map(generatePoint);
 };
 
-export {generatePoint, generatePoints, pointTypes, activityCategory, destinations, getRandomDescription};
+export {
+  generatePoint,
+  generatePoints,
+  getRandomDescription,
+  getPointCategory,
+  pointTypes,
+  destinations,
+};

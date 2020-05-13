@@ -10,7 +10,7 @@ const sortPoints = (points) => {
 };
 const getDestinations = (points) => {
   const sortedPoints = sortPoints(points);
-  return sortedPoints.map((point) => point.destination);
+  return sortedPoints.map((point) => point.destination.name);
 };
 const getRouteDates = (points) => {
   if (points.length === 0) {
@@ -18,11 +18,11 @@ const getRouteDates = (points) => {
   }
   const sortedPoints = sortPoints(points);
 
-  const startDate = sortedPoints[0].startDate;
-  const endDate = sortedPoints[sortedPoints.length - 1].endDate;
+  const startDate = new Date(sortedPoints[0].startDate);
+  const endDate = new Date(sortedPoints[sortedPoints.length - 1].endDate);
   let routeDates = ``;
 
-  if (startDate.getMonth() === endDate.getMonth()) {
+  if (startDate.getDate() === endDate.getDate()) {
     routeDates = `${moment(startDate).format(`MMM DD`)}`;
   } else {
     routeDates = `${moment(startDate).format(`MMM DD `)} — ${moment(endDate).format(`MMM DD`)}`;

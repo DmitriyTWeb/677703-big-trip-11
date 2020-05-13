@@ -13,127 +13,71 @@ const MONTHS = [
   `dec`
 ];
 
+export const FilterType = {
+  EVERYTHING: `everything`,
+  PAST: `past`,
+  FUTURE: `future`
+};
+
 export {MONTHS};
 
-export const options = [
+export const allTypesOptions = [
   {
-    name: `luggage`,
-    title: `Add luggage`,
-    price: 30,
-    type: `taxi`,
+    "type": `taxi`,
+    "options": [
+      {title: `Add luggage`, price: 30},
+      {title: `Driver with Mask`, price: 5},
+      {title: `Silent driver`, price: 20},
+      {title: `Play DnB`, price: 10},
+    ]
   },
   {
-    name: `driverWithMask`,
-    title: `Driver with Mask`,
-    price: 5,
-    type: `taxi`,
+    "type": `bus`,
+    "options": [
+      {title: `Add luggage`, price: 30},
+      {title: `No TV into`, price: 20},
+      {title: `More space for legs`, price: 15},
+    ]
   },
   {
-    name: `silentDriver`,
-    title: `Silent driver`,
-    price: 20,
-    type: `taxi`,
+    "type": `train`,
+    "options": [
+      {title: `Add luggage`, price: 27},
+      {title: `No smells`, price: 10},
+      {title: `Sober neighbors`, price: 17},
+    ]
   },
   {
-    name: `playDnB`,
-    title: `Play DnB`,
-    price: 10,
-    type: `taxi`,
+    "type": `flight`,
+    "options": [
+      {title: `Comfort class`, price: 100},
+      {title: `Add water`, price: 3},
+      {title: `Add meal`, price: 15},
+      {title: `Choose seats`, price: 5},
+      {title: `More space for legs`, price: 15},
+    ]
   },
   {
-    name: `luggage`,
-    title: `Add luggage`,
-    price: 30,
-    type: `bus`,
+    "type": `ship`,
+    "options": [
+      {title: `Choose seats`, price: 5},
+      {title: `Add stabilization`, price: 5},
+      {title: `Own plage`, price: 120},
+    ]
   },
   {
-    name: `noTV`,
-    title: `No TV into`,
-    price: 20,
-    type: `bus`,
+    "type": `transport`,
+    "options": [
+      {title: `Travel by train`, price: 40},
+    ]
   },
   {
-    name: `moreSpace`,
-    title: `More space for legs`,
-    price: 15,
-    type: `bus`,
+    "type": `sightseeing`,
+    "options": [
+      {title: `Add sunshine`, price: 40}
+    ]
   },
-  {
-    name: `luggage`,
-    title: `Add luggage`,
-    price: 27,
-    type: `train`,
-  },
-  {
-    name: `noSmells`,
-    title: `No smells`,
-    price: 10,
-    type: `train`,
-  },
-  {
-    name: `soberNeighbors`,
-    title: `Sober neighbors`,
-    price: 17,
-    type: `train`,
-  },
-  {
-    name: `comfort`,
-    title: `Switch to comfort class`,
-    price: 100,
-    type: `flight`,
-  },
-  {
-    name: `addWater`,
-    title: `Add water`,
-    price: 3,
-    type: `flight`,
-  },
-  {
-    name: `meal`,
-    title: `Add meal`,
-    price: 15,
-    type: `check-in`,
-  },
-  {
-    name: `seats`,
-    title: `Choose seats`,
-    price: 5,
-    type: `flight`,
-  },
-  {
-    name: `moreSpace`,
-    title: `More space for legs`,
-    price: 15,
-    type: `flight`,
-  },
-  {
-    name: `seats`,
-    title: `Choose seats`,
-    price: 5,
-    type: `ship`,
-  },
-  {
-    name: `addStabiliztion`,
-    title: `Add stabilization`,
-    price: 5,
-    type: `ship`,
-  },
-  {
-    name: `ownPlage`,
-    title: `Own plage`,
-    price: 120,
-    type: `ship`,
-  },
-  {
-    name: `train`,
-    title: `Travel by train`,
-    price: 40,
-    type: `transport`,
-  },
-  {
-    name: `sunshine`,
-    title: `Add sunshine`,
-    price: 40,
-    type: `sightseeing`,
-  }
 ];
+
+export const activityCategory = [`check-in`, `sightseeing`, `restaurant`];
+export const destinationNames = [`amsterdam`, `geneva`, `chamonix`, `saint Petersburg`];
