@@ -19,7 +19,8 @@ export default class Menu extends AbstractComponent {
   constructor() {
     super();
 
-    this.setOnClick = this.setOnClick.bind(this);
+    this.setOnClickHandler = this.setOnClickHandler.bind(this);
+    this._activeItem = MenuItem.TABLE;
   }
 
   getTemplate() {
@@ -33,18 +34,23 @@ export default class Menu extends AbstractComponent {
     tabs.forEach((tab) => tab.classList.remove(activeClass));
 
     const item = this.getElement().querySelector(`#${menuItem}`);
+
     if (item) {
+      this._activeItem = item.id;
       item.classList.add(activeClass);
     }
   }
 
-  setOnClick(handler) {
+  setOnClickHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       if (evt.target.tagName !== `A`) {
         return;
       }
 
       const menuItem = evt.target.id;
+      if (menuItem === this._activeItem) {
+        return;
+      }
       handler(menuItem);
     });
   }

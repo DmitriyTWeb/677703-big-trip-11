@@ -39,27 +39,20 @@ render(pageMainContainerElement, eventsListComponent, RenderPosition.BEFOREEND);
 const tripController = new TripController(eventsListComponent, pointsModel);
 tripController.render(destinations, allTypesOptions);
 
-const dateTo = new Date();
-const dateFrom = (() => {
-  const d = new Date(dateTo);
-  d.setDate(d.getDate() - 7);
-  return d;
-})();
-const statisticsComponent = new StatisticsComponent();
+const statisticsComponent = new StatisticsComponent(pointsModel);
 render(pageMainContainerElement, statisticsComponent, RenderPosition.BEFOREEND);
 statisticsComponent.hide();
 
-menuComponent.setOnClick((menuItem) => {
-  console.log(`setOnclick`);
+menuComponent.setOnClickHandler((menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
-      console.log(`${menuItem} is pressed`);
+      tripController.resetSortType();
       menuComponent.setActiveItem(MenuItem.TABLE);
       statisticsComponent.hide();
       tripController.show();
       break;
     case MenuItem.STATS:
-      console.log(`${menuItem} is pressed`);
+      tripController.resetSortType();
       menuComponent.setActiveItem(MenuItem.STATS);
       statisticsComponent.show();
       tripController.hide();
