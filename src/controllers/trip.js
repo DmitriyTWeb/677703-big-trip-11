@@ -88,6 +88,14 @@ export default class TripController {
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
+  show() {
+    this._container.show();
+  }
+
+  hide() {
+    this._container.hide();
+  }
+
   render(destinations, allTypesOptions) {
     const container = this._container.getElement();
     const points = getSortedPoints(this._pointsModel.getPoints(), SortType.EVENT);
