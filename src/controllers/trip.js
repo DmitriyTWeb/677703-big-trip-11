@@ -88,6 +88,14 @@ export default class TripController {
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
+  show() {
+    this._container.show();
+  }
+
+  hide() {
+    this._container.hide();
+  }
+
   render(destinations, allTypesOptions) {
     const container = this._container.getElement();
     const points = getSortedPoints(this._pointsModel.getPoints(), SortType.EVENT);
@@ -150,7 +158,6 @@ export default class TripController {
         pointController.destroy();
         this._updatePoints();
       } else {
-        // this._renderedPointControllers = [].concat(pointController, this._renderedPointControllers);
         this._pointsModel.addPoint(newData);
         this._updatePoints();
       }
@@ -187,5 +194,10 @@ export default class TripController {
 
     this._removePoints();
     this._renderPoints(sortedPoints, isSortingOn);
+  }
+
+  resetSortType() {
+    this._onSortTypeChange(SortType.EVENT);
+    this._sortComponent.resetSortType();
   }
 }

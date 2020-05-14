@@ -107,7 +107,6 @@ export default class Point {
   destroy() {
     remove(this._pointEditComponent);
     remove(this._pointComponent);
-
     document.removeEventListener(`keydown`, this._onEscKeydown);
   }
 
