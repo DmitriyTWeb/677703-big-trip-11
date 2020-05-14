@@ -18,6 +18,9 @@ const createMenuTemplate = () => {
 export default class Menu extends AbstractComponent {
   constructor() {
     super();
+
+    this.setOnClickHandler = this.setOnClickHandler.bind(this);
+    this._activeItem = MenuItem.TABLE;
   }
 
   getTemplate() {
@@ -26,24 +29,28 @@ export default class Menu extends AbstractComponent {
 
   setActiveItem(menuItem) {
     const activeClass = `trip-tabs__btn--active`;
-    const tabs = Array.from(this.getElement.querySelectorAll(`.trip-tabs__btn`));
+    const tabs = Array.from(this.getElement().querySelectorAll(`.trip-tabs__btn`));
 
     tabs.forEach((tab) => tab.classList.remove(activeClass));
-    // alert(`now ${menuItem} is active`);
+
     const item = this.getElement().querySelector(`#${menuItem}`);
+
     if (item) {
+      this._activeItem = item.id;
       item.classList.add(activeClass);
     }
   }
 
-  setOnClick(handler) {
+  setOnClickHandler(handler) {
     this.getElement().addEventListener(`click`, (evt) => {
       if (evt.target.tagName !== `A`) {
         return;
       }
 
-      const menuItem = evt.target.dispatchEvent;
-
+      const menuItem = evt.target.id;
+      if (menuItem === this._activeItem) {
+        return;
+      }
       handler(menuItem);
     });
   }

@@ -3,6 +3,7 @@ import FilterController from "./controllers/filter.js";
 import PointsModel from "./models/points.js";
 import MenuComponent, {MenuItem} from "./components/menu.js";
 import {allTypesOptions} from "./const.js";
+import StatisticsComponent from "./components/statistics.js";
 import TripController from "./controllers/trip.js";
 import TripInfoComponent from "./components/trip-info.js";
 import {render, RenderPosition} from "./utils/render.js";
@@ -38,19 +39,31 @@ render(pageMainContainerElement, eventsListComponent, RenderPosition.BEFOREEND);
 const tripController = new TripController(eventsListComponent, pointsModel);
 tripController.render(destinations, allTypesOptions);
 
-menuComponent.setOnClick((menuItem) => {
+const statisticsComponent = new StatisticsComponent(pointsModel);
+render(pageMainContainerElement, statisticsComponent, RenderPosition.BEFOREEND);
+statisticsComponent.hide();
+
+menuComponent.setOnClickHandler((menuItem) => {
   switch (menuItem) {
     case MenuItem.TABLE:
+      tripController.resetSortType();
       menuComponent.setActiveItem(MenuItem.TABLE);
+      statisticsComponent.hide();
+      tripController.show();
       break;
     case MenuItem.STATS:
+      tripController.resetSortType();
       menuComponent.setActiveItem(MenuItem.STATS);
+      statisticsComponent.show();
+      tripController.hide();
       break;
   }
 });
 
 const newEventButton = pageHeaderElement.querySelector(`.trip-main__event-add-btn`);
 newEventButton.addEventListener(`click`, () => {
+  statisticsComponent.hide();
+  tripController.show();
   pointsModel.setFilterResetHandler(filtersController.resetFilter);
   tripController.createPoint();
 });

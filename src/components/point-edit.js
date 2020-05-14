@@ -168,6 +168,7 @@ const createEditPointTemplate = (point, destinations, typeOptions) => {
               id="event-destination-1" type="text"
               name="event-destination"
               value="${capitalizeFirstLetter(destinationName)}" list="destination-list-1"
+              required
             >
             <datalist id="destination-list-1">
               ${destinationList}
@@ -203,7 +204,7 @@ const createEditPointTemplate = (point, destinations, typeOptions) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${inputPrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${inputPrice}" required>
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
