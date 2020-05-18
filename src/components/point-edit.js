@@ -3,7 +3,7 @@ import {capitalizeFirstLetter} from "../utils/common.js";
 import {getPointCategory, getTypeOptions} from "../utils/common.js";
 import {encode} from "he";
 import flatpickr from "flatpickr";
-import {pointTypes} from "../mock/points.js";
+import {pointTypes} from "../const.js";
 
 import "flatpickr/dist/flatpickr.min.css";
 
@@ -106,7 +106,7 @@ const createDestinationDetailsTemplate = (destination) => {
   );
 };
 
-const createEditPointTemplate = (point, destinations, typeOptions) => {
+const createEditPointTemplate = (point, destinations, allTypesOptions) => {
   const {
     type,
     destination,
@@ -125,6 +125,7 @@ const createEditPointTemplate = (point, destinations, typeOptions) => {
   });
 
   const pointCategory = getPointCategory(type);
+  const typeOptions = allTypesOptions.find((item) => item.type === point.type);
 
   const transferItemsTemplate = createEventTypeItemGroup(transferTypes, type);
   const activityItemsTemplate = createEventTypeItemGroup(activityTypes, type);
@@ -275,12 +276,12 @@ const parseFormData = (formData, destinations, typeOptions) => {
 };
 
 export default class EditPoint extends AbstractSmartComponent {
-  constructor(point, destinations, options) {
+  constructor(point, destinations, allTypesOptions) {
     super();
 
     this._point = point;
     this._destinations = destinations;
-    this._options = options;
+    this._allTypesOptions = allTypesOptions;
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
     this._deleteButtonClickHandler = null;
@@ -296,7 +297,7 @@ export default class EditPoint extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._point, this._destinations, this._options);
+    return createEditPointTemplate(this._point, this._destinations, this._allTypesOptions);
   }
 
   removeElement() {
@@ -329,7 +330,8 @@ export default class EditPoint extends AbstractSmartComponent {
 
   getData() {
     const form = this.getElement().querySelector(`form`);
-    return parseFormData(new FormData(form), this._destinations, this._options.options);
+    const typeOptions = getTypeOptions(this._allTypesOptions, this._point.type);
+    return parseFormData(new FormData(form), this._destinations, typeOptions);
   }
 
   setSubmitHandler(handler) {
@@ -392,7 +394,6 @@ export default class EditPoint extends AbstractSmartComponent {
       button.addEventListener(`change`, (evt) => {
         const newType = evt.target.value;
         this._point.type = newType;
-        this._options = getTypeOptions(newType);
 
         this.rerender();
       });

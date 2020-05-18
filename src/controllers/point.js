@@ -31,20 +31,19 @@ export default class Point {
     this._pointComponent = null;
     this._pointEditComponent = null;
     this._onEscKeydown = this._onEscKeydown.bind(this);
-    this._typeOptions = null;
+    this._AllTypesOptions = null;
   }
 
   render(point, mode, destinations, allTypesOptions) {
     this._point = point;
+    this._AllTypesOptions = allTypesOptions;
+
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
     this._mode = mode;
 
-
-    this._typeOptions = allTypesOptions.find((item) => item.type === point.type);
-
     this._pointComponent = new PointComponent(point);
-    this._pointEditComponent = new PointEditComponent(point, destinations, this._typeOptions ? this._typeOptions : []);
+    this._pointEditComponent = new PointEditComponent(point, destinations, this._AllTypesOptions);
 
     this._pointComponent.setRollupButtonClickHandler(() => {
       this._replacePointToEdit();
