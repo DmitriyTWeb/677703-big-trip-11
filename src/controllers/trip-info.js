@@ -13,6 +13,9 @@ export default class TripInfo {
   }
 
   render() {
+    if (this._pointsModel.getPointsAll().length === 0) {
+      return;
+    }
     const container = this._container;
     const oldComponent = this._tripInfoComponent;
 

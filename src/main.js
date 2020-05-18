@@ -1,3 +1,4 @@
+import API from "./api.js";
 import EventsListComponent from "./components/events-list.js";
 import FilterController from "./controllers/filter.js";
 import PointsModel from "./models/points.js";
@@ -5,13 +6,13 @@ import MenuComponent, {MenuItem} from "./components/menu.js";
 import {allTypesOptions} from "./const.js";
 import StatisticsComponent from "./components/statistics.js";
 import TripController from "./controllers/trip.js";
-import {render, RenderPosition} from "./utils/render.js";
-import {generatePoints, destinations} from "./mock/points.js";
-
 import TripInfoController from "./controllers/trip-info.js";
+import {render, RenderPosition} from "./utils/render.js";
+import {destinations} from "./mock/points.js";
 
 
-const POINTS_COUNT = 22;
+const AUTHORIZATION = `Basic [Xy~,MHMVf2auWFD9Jj`;
+// const POINTS_COUNT = 22;
 
 const pageHeaderElement = document.querySelector(`.page-header`);
 const pageMainElement = document.querySelector(`.page-main`);
@@ -21,11 +22,13 @@ const filterTitleElement = pageHeaderElement.querySelector(`.trip-controls > h2:
 const newEventButton = pageHeaderElement.querySelector(`.trip-main__event-add-btn`);
 const pageMainContainerElement = pageMainElement.querySelector(`.page-body__container`);
 
-const points = generatePoints(POINTS_COUNT);
+// const points = generatePoints(POINTS_COUNT);
 
 const menuComponent = new MenuComponent();
 
+const api = new API(AUTHORIZATION);
 const pointsModel = new PointsModel();
+
 const tripInfoController = new TripInfoController(tripMainElement, pointsModel);
 const filtersController = new FilterController(filterTitleElement, pointsModel);
 const eventsListComponent = new EventsListComponent();
@@ -33,15 +36,15 @@ const tripController = new TripController(eventsListComponent, pointsModel);
 const statisticsComponent = new StatisticsComponent(pointsModel);
 
 render(menuTitleElement, menuComponent, RenderPosition.AFTER);
-tripInfoController.render();
-filtersController.render();
+
+// filtersController.render();
 render(pageMainContainerElement, eventsListComponent, RenderPosition.BEFOREEND);
 render(pageMainContainerElement, statisticsComponent, RenderPosition.BEFOREEND);
 
 statisticsComponent.hide();
 
-pointsModel.setPoints(points);
-tripController.render(destinations, allTypesOptions);
+// pointsModel.setPoints(points);
+
 
 menuComponent.setOnClickHandler((menuItem) => {
   switch (menuItem) {
@@ -68,3 +71,10 @@ newEventButton.addEventListener(`click`, () => {
   pointsModel.setFilterResetHandler(filtersController.resetFilter);
   tripController.createPoint();
 });
+
+api.getPoints()
+  .then((points) => {
+    pointsModel.setPoints(points);
+    tripController.render(destinations, allTypesOptions);
+    tripInfoController.render();
+  });
