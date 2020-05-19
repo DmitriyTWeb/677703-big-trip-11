@@ -65,9 +65,10 @@ const getSortedPoints = (points, sortType) => {
   return sortedPoints;
 };
 export default class TripController {
-  constructor(container, pointsModel) {
+  constructor(container, pointsModel, api) {
     this._container = container;
     this._pointsModel = pointsModel;
+    this._api = api;
 
     this._destinations = null;
     this._allTypesOptions = [];

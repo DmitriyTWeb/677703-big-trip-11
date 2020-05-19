@@ -30,7 +30,7 @@ const pointsModel = new PointsModel();
 const tripInfoController = new TripInfoController(tripMainElement, pointsModel);
 const filtersController = new FilterController(filterTitleElement, pointsModel);
 const eventsListComponent = new EventsListComponent();
-const tripController = new TripController(eventsListComponent, pointsModel);
+const tripController = new TripController(eventsListComponent, pointsModel, api);
 const statisticsComponent = new StatisticsComponent(pointsModel);
 const loadingComponent = new LoadingComponent();
 
