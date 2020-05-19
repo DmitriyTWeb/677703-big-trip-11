@@ -171,8 +171,8 @@ export default class TripController {
           const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
 
           if (isSuccess) {
-            pointController.render(pointModel, PointControllerMode.DEFAULT);
-            this._updateTasks();
+            pointController.render(pointModel, PointControllerMode.DEFAULT, this._destinations, this._allTypesOptions);
+            this._updatePoints();
           }
         });
     }

@@ -1,6 +1,6 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
 import {capitalizeFirstLetter} from "../utils/common.js";
-import {getPointCategory, getTypeOptions} from "../utils/common.js";
+import {getPointCategory} from "../utils/common.js";
 import {encode} from "he";
 import flatpickr from "flatpickr";
 import {pointTypes} from "../const.js";
@@ -233,48 +233,6 @@ const createEditPointTemplate = (point, destinations, allTypesOptions) => {
   );
 };
 
-const getOptionByFormKey = (allOptions, key) => {
-  const offerPrefix = `event-offer-`;
-  const title = key.substring(offerPrefix.length).split(`-`).join(` `);
-
-  return allOptions.find((item) => {
-    return item.title === title;
-  });
-};
-
-const parseFormData = (formData, destinations, typeOptions) => {
-  const type = formData.get(`event-type`);
-  const destinationFromForm = formData.get(`event-destination`);
-  const startDate = formData.get(`event-start-time`) * 1000;
-  const endDate = formData.get(`event-end-time`) * 1000;
-  const inputPrice = parseInt(formData.get(`event-price`), 10);
-
-  const destination = destinations.find((item) => item.name === destinationFromForm);
-
-  let isFavorite = false;
-  let options = [];
-
-  for (const [key] of formData.entries()) {
-    if (/event-offer\w*/.test(key)) {
-      options.push(getOptionByFormKey(typeOptions, key));
-    }
-    if (key === `event-favorite`) {
-      isFavorite = true;
-    }
-  }
-
-  return {
-    type,
-    destination,
-    startDate,
-    endDate,
-    inputPrice,
-    options,
-    isFavorite
-  };
-
-};
-
 export default class EditPoint extends AbstractSmartComponent {
   constructor(point, destinations, allTypesOptions) {
     super();
@@ -330,8 +288,7 @@ export default class EditPoint extends AbstractSmartComponent {
 
   getData() {
     const form = this.getElement().querySelector(`form`);
-    const typeOptions = getTypeOptions(this._allTypesOptions, this._point.type);
-    return parseFormData(new FormData(form), this._destinations, typeOptions);
+    return new FormData(form);
   }
 
   setSubmitHandler(handler) {

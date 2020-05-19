@@ -1,6 +1,8 @@
+import {getTypeOptions} from "../utils/common.js";
 import moment from "moment";
 import PointComponent from "../components/point.js";
 import PointEditComponent from "../components/point-edit.js";
+import PointModel from "../models/point.js";
 import {render, replace, RenderPosition, remove} from "../utils/render.js";
 
 export const Mode = {
@@ -19,6 +21,49 @@ export const EmptyTask = {
   options: [],
 };
 
+const getOptionByFormKey = (allOptions, key) => {
+  const offerPrefix = `event-offer-`;
+  const title = key.substring(offerPrefix.length).split(`-`).join(` `);
+
+  return allOptions.find((item) => {
+    return item.title === title;
+  });
+};
+
+const parseFormData = (formData, destinations, allTypesOptions) => {
+  const type = formData.get(`event-type`);
+  const typeOptions = getTypeOptions(allTypesOptions, type);
+  const destinationFromForm = formData.get(`event-destination`);
+  const startDate = formData.get(`event-start-time`) * 1000;
+  const endDate = formData.get(`event-end-time`) * 1000;
+  const inputPrice = parseInt(formData.get(`event-price`), 10);
+
+  const destination = destinations.find((item) => item.name === destinationFromForm);
+
+  let isFavorite = false;
+  let options = [];
+
+  for (const [key] of formData.entries()) {
+    if (/event-offer\w*/.test(key)) {
+      options.push(getOptionByFormKey(typeOptions, key));
+    }
+    if (key === `event-favorite`) {
+      isFavorite = true;
+    }
+  }
+
+  return new PointModel({
+    "type": type,
+    "destination": destination,
+    "date_from": new Date(startDate).toISOString(),
+    "date_to": new Date(endDate).toISOString(),
+    "base_price": inputPrice,
+    "is_favorite": isFavorite,
+    "offers": options
+  });
+
+};
+
 export default class Point {
   constructor(container, onDataChange, onViewChange) {
     this._container = container;
@@ -31,19 +76,19 @@ export default class Point {
     this._pointComponent = null;
     this._pointEditComponent = null;
     this._onEscKeydown = this._onEscKeydown.bind(this);
-    this._AllTypesOptions = null;
+    this._allTypesOptions = null;
   }
 
   render(point, mode, destinations, allTypesOptions) {
     this._point = point;
-    this._AllTypesOptions = allTypesOptions;
+    this._allTypesOptions = allTypesOptions;
 
     const oldPointComponent = this._pointComponent;
     const oldPointEditComponent = this._pointEditComponent;
     this._mode = mode;
 
     this._pointComponent = new PointComponent(point);
-    this._pointEditComponent = new PointEditComponent(point, destinations, this._AllTypesOptions);
+    this._pointEditComponent = new PointEditComponent(point, destinations, this._allTypesOptions);
 
     this._pointComponent.setRollupButtonClickHandler(() => {
       this._replacePointToEdit();
@@ -53,7 +98,8 @@ export default class Point {
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
 
-      const data = this._pointEditComponent.getData();
+      const formData = this._pointEditComponent.getData();
+      const data = parseFormData(formData, destinations, this._allTypesOptions);
       this._onDataChange(this, point, data);
     });
 
@@ -61,9 +107,9 @@ export default class Point {
         .setDeleteButtonClickHandler(() => this._onDataChange(this, point, null));
 
     this._pointEditComponent.setFavoriteButtonClickHandler(() => {
-      this._onDataChange(this, point, Object.assign({}, point, {
-        isFavorite: !point.isFavorite,
-      }));
+      const newPoint = PointModel.clone(point);
+      newPoint.isFavorite = !newPoint.isFavorite;
+      this._onDataChange(this, point, newPoint);
     });
 
     switch (mode) {

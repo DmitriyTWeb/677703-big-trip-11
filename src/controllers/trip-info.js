@@ -1,4 +1,4 @@
-import { render, replace, RenderPosition } from "../utils/render.js";
+import {render, replace, RenderPosition} from "../utils/render.js";
 import TripInfoComponent from "../components/trip-info.js";
 
 
