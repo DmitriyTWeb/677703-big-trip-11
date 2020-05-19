@@ -5,6 +5,8 @@ import PointEditComponent from "../components/point-edit.js";
 import PointModel from "../models/point.js";
 import {render, replace, RenderPosition, remove} from "../utils/render.js";
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
@@ -153,6 +155,16 @@ export default class Point {
     remove(this._pointEditComponent);
     remove(this._pointComponent);
     document.removeEventListener(`keydown`, this._onEscKeydown);
+  }
+
+  shake() {
+    this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._pointEditComponent.getElement().style.animation = ``;
+      this._pointComponent.getElement().style.animation = ``;
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   _replaceEditToPoint() {
