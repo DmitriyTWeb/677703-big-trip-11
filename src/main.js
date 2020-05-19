@@ -11,6 +11,8 @@ import {remove, render, RenderPosition} from "./utils/render.js";
 
 
 const AUTHORIZATION = `Basic [Xy~,MHMVf2auWFD9Jj`;
+const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
+
 let destinationsFromServer = [];
 let offersFromServer = [];
 
@@ -24,7 +26,7 @@ const pageMainContainerElement = pageMainElement.querySelector(`.page-body__cont
 
 const menuComponent = new MenuComponent();
 
-const api = new API(AUTHORIZATION);
+const api = new API(END_POINT, AUTHORIZATION);
 const pointsModel = new PointsModel();
 
 const tripInfoController = new TripInfoController(tripMainElement, pointsModel);

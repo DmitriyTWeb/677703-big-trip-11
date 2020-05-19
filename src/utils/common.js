@@ -50,5 +50,5 @@ export const capitalizeFirstLetter = (str) => {
 
 export const getTypeOptions = (allTypesOptions, type) => {
   const typeOptions = allTypesOptions.find((item) => item.type === type);
-  return typeOptions ? typeOptions : {};
+  return typeOptions ? typeOptions.options : [];
 };
