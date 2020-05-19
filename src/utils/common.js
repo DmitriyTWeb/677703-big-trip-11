@@ -1,4 +1,4 @@
-import {activityCategory, allTypesOptions} from "../const.js";
+import {activityCategory} from "../const.js";
 import moment from "moment";
 
 const leadingZero = (value) => {
@@ -48,7 +48,7 @@ export const capitalizeFirstLetter = (str) => {
   return `${str[0].toUpperCase()}${str.slice(1)}`;
 };
 
-export const getTypeOptions = (type) => {
+export const getTypeOptions = (allTypesOptions, type) => {
   const typeOptions = allTypesOptions.find((item) => item.type === type);
-  return typeOptions ? typeOptions : {};
+  return typeOptions ? typeOptions.options : [];
 };

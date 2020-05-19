@@ -382,6 +382,15 @@ main {
   height: 54px;
   margin-right: 22px; }
 
+.trip-loading__msg {
+  margin: 0;
+  margin-top: 280px;
+  font-weight: 500;
+  font-size: 44px;
+  line-height: 60px;
+  text-align: center;
+  color: #000000; }
+
 .trip-events {
   padding-top: 22px; }
   .trip-events--hidden {

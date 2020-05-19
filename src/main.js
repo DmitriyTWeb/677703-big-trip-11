@@ -1,46 +1,47 @@
+import API from "./api.js";
 import EventsListComponent from "./components/events-list.js";
 import FilterController from "./controllers/filter.js";
+import LoadingComponent from "./components/loading.js";
 import PointsModel from "./models/points.js";
 import MenuComponent, {MenuItem} from "./components/menu.js";
-import {allTypesOptions} from "./const.js";
 import StatisticsComponent from "./components/statistics.js";
 import TripController from "./controllers/trip.js";
-import TripInfoComponent from "./components/trip-info.js";
-import {render, RenderPosition} from "./utils/render.js";
-import {generatePoints, destinations} from "./mock/points.js";
+import TripInfoController from "./controllers/trip-info.js";
+import {remove, render, RenderPosition} from "./utils/render.js";
 
 
-const POINTS_COUNT = 22;
+const AUTHORIZATION = `Basic [Xy~,MHMVf2auWFD9Jj`;
+const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
+
+let destinationsFromServer = [];
+let offersFromServer = [];
 
 const pageHeaderElement = document.querySelector(`.page-header`);
 const pageMainElement = document.querySelector(`.page-main`);
 const tripMainElement = pageHeaderElement.querySelector(`.trip-main`);
 const menuTitleElement = pageHeaderElement.querySelector(`.trip-controls > h2:first-child`);
-
-const menuComponent = new MenuComponent();
-render(menuTitleElement, menuComponent, RenderPosition.AFTER);
-
-const points = generatePoints(POINTS_COUNT);
-
-const pointsModel = new PointsModel();
-pointsModel.setPoints(points);
-
 const filterTitleElement = pageHeaderElement.querySelector(`.trip-controls > h2:last-child`);
-render(tripMainElement, new TripInfoComponent(points), RenderPosition.AFTERBEGIN);
-
-const filtersController = new FilterController(filterTitleElement, pointsModel);
-filtersController.render();
-
+const newEventButton = pageHeaderElement.querySelector(`.trip-main__event-add-btn`);
 const pageMainContainerElement = pageMainElement.querySelector(`.page-body__container`);
 
+const menuComponent = new MenuComponent();
+
+const api = new API(END_POINT, AUTHORIZATION);
+const pointsModel = new PointsModel();
+
+const tripInfoController = new TripInfoController(tripMainElement, pointsModel);
+const filtersController = new FilterController(filterTitleElement, pointsModel);
 const eventsListComponent = new EventsListComponent();
-render(pageMainContainerElement, eventsListComponent, RenderPosition.BEFOREEND);
-
-const tripController = new TripController(eventsListComponent, pointsModel);
-tripController.render(destinations, allTypesOptions);
-
+const tripController = new TripController(eventsListComponent, pointsModel, api);
 const statisticsComponent = new StatisticsComponent(pointsModel);
+const loadingComponent = new LoadingComponent();
+
+render(menuTitleElement, menuComponent, RenderPosition.AFTER);
+
+filtersController.render();
+render(pageMainContainerElement, eventsListComponent, RenderPosition.BEFOREEND);
 render(pageMainContainerElement, statisticsComponent, RenderPosition.BEFOREEND);
+
 statisticsComponent.hide();
 
 menuComponent.setOnClickHandler((menuItem) => {
@@ -60,10 +61,37 @@ menuComponent.setOnClickHandler((menuItem) => {
   }
 });
 
-const newEventButton = pageHeaderElement.querySelector(`.trip-main__event-add-btn`);
 newEventButton.addEventListener(`click`, () => {
   statisticsComponent.hide();
   tripController.show();
+
   pointsModel.setFilterResetHandler(filtersController.resetFilter);
   tripController.createPoint();
 });
+
+render(pageMainContainerElement, loadingComponent, RenderPosition.BEFOREEND);
+
+const getPoints = () => {
+  if (destinationsFromServer.length !== 0 && offersFromServer.length !== 0) {
+    api.getPoints()
+      .then((points) => {
+        remove(loadingComponent);
+        pointsModel.setPoints(points);
+        tripController.render(destinationsFromServer, offersFromServer);
+        tripInfoController.render();
+      });
+  }
+};
+
+api.getDesinations()
+  .then((destinations) => {
+    destinationsFromServer = destinations;
+    getPoints();
+  });
+
+api.getOffers()
+  .then((offers) => {
+    offersFromServer = offers;
+    getPoints();
+  });
+
