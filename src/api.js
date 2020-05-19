@@ -56,6 +56,10 @@ const API = class {
       .then(Point.parsePoint);
   }
 
+  deletePoint(id) {
+    return this._load({url: `points/${id}`, method: Method.DELETE});
+  }
+
   getDesinations() {
     return this._load({url: `destinations`})
       .then((response) => response.json())
