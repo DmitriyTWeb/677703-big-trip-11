@@ -166,10 +166,15 @@ export default class TripController {
       this._pointsModel.removePoint(oldData.id);
       this._updatePoints();
     } else {
-      const isSuccess = this._pointsModel.updatePoint(oldData.id, newData);
-      if (isSuccess) {
-        pointController.render(newData, PointControllerMode.DEFAULT, this._destinations, this._allTypesOptions);
-      }
+      this._api.updatePoint(oldData.id, newData)
+        .then((pointModel) => {
+          const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
+
+          if (isSuccess) {
+            pointController.render(pointModel, PointControllerMode.DEFAULT);
+            this._updateTasks();
+          }
+        });
     }
   }
 
