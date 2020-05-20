@@ -965,3 +965,7 @@ main {
 .shake {
   animation: shake 0.6s;
 }
+
+.error-border {
+  border: 2px dashed red;
+}

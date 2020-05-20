@@ -177,7 +177,7 @@ export default class TripController {
         })
         .catch(() => {
           pointController.shake();
-        });;
+        });
     } else {
       this._api.updatePoint(oldData.id, newData)
         .then((pointModel) => {
@@ -190,7 +190,7 @@ export default class TripController {
         })
         .catch(() => {
           pointController.shake();
-        });;
+        });
     }
   }
 

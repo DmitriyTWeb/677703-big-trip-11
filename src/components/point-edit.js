@@ -7,6 +7,32 @@ import {pointTypes} from "../const.js";
 
 import "flatpickr/dist/flatpickr.min.css";
 
+const DefaultData = {
+  deleteButtonText: `Delete`,
+  saveButtonText: `Save`,
+};
+
+const disableForm = (form, disabled = false) => {
+  const disableElements = (elements) => {
+    elements.forEach((element) => {
+      element.disabled = disabled;
+      return true;
+    });
+  };
+
+  const inputs = form.querySelectorAll(`input`);
+  const textareas = form.querySelectorAll(`textarea`);
+  const buttons = form.querySelectorAll(`button`);
+  const selects = form.querySelectorAll(`select`);
+
+  disableElements(inputs);
+  disableElements(textareas);
+  disableElements(buttons);
+  disableElements(selects);
+
+  return true;
+};
+
 const createEventTypeItemGroup = (types, currentType) => {
   return types.map((type) => {
     type = type.toLowerCase();
@@ -106,7 +132,7 @@ const createDestinationDetailsTemplate = (destination) => {
   );
 };
 
-const createEditPointTemplate = (point, destinations, allTypesOptions) => {
+const createEditPointTemplate = (point, destinations, allTypesOptions, externalData) => {
   const {
     type,
     destination,
@@ -136,6 +162,9 @@ const createEditPointTemplate = (point, destinations, allTypesOptions) => {
   const isFavoriteChecked = isFavorite ? `checked` : ``;
   const offersTemplate = createOtionsTemplate(typeOptions.options, options);
   const destinationDetailsTemplate = createDestinationDetailsTemplate(destination);
+
+  const deleteButtonText = externalData.deleteButtonText;
+  const saveButtonText = externalData.saveButtonText;
 
   return (
     `<li class="trip-events__item">
@@ -208,8 +237,8 @@ const createEditPointTemplate = (point, destinations, allTypesOptions) => {
             <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${inputPrice}" required>
           </div>
 
-          <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">Delete</button>
+          <button class="event__save-btn  btn  btn--blue" type="submit">${saveButtonText}</button>
+          <button class="event__reset-btn" type="reset">${deleteButtonText}</button>
 
           <input id="event-favorite-1" class="event__favorite-checkbox  visually-hidden" type="checkbox" name="event-favorite" ${isFavoriteChecked}>
           <label class="event__favorite-btn" for="event-favorite-1">
@@ -240,6 +269,8 @@ export default class EditPoint extends AbstractSmartComponent {
     this._point = point;
     this._destinations = destinations;
     this._allTypesOptions = allTypesOptions;
+    this._externalData = DefaultData;
+
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
     this._deleteButtonClickHandler = null;
@@ -255,7 +286,12 @@ export default class EditPoint extends AbstractSmartComponent {
   }
 
   getTemplate() {
-    return createEditPointTemplate(this._point, this._destinations, this._allTypesOptions);
+    return createEditPointTemplate(this._point, this._destinations, this._allTypesOptions, this._externalData);
+  }
+
+  setData(data) {
+    this._externalData = Object.assign({}, DefaultData, data);
+    this.rerender();
   }
 
   removeElement() {
@@ -289,6 +325,10 @@ export default class EditPoint extends AbstractSmartComponent {
   getData() {
     const form = this.getElement().querySelector(`form`);
     return new FormData(form);
+  }
+
+  disableForm(disabled) {
+    disableForm(this.getElement().querySelector(`form`), disabled);
   }
 
   setSubmitHandler(handler) {
@@ -338,8 +378,7 @@ export default class EditPoint extends AbstractSmartComponent {
       enableTime: true,
       altFormat: `d/m/Y H:i`,
       dateFormat: `U`,
-
-      defaultDate: this._point.endDate || `today`
+      defaultDate: this._point.endDate || `today`,
     });
   }
 
