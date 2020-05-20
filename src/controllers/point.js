@@ -5,6 +5,8 @@ import PointEditComponent from "../components/point-edit.js";
 import PointModel from "../models/point.js";
 import {render, replace, RenderPosition, remove} from "../utils/render.js";
 
+const SHAKE_ANIMATION_TIMEOUT = 600;
+
 export const Mode = {
   DEFAULT: `default`,
   EDIT: `edit`,
@@ -97,14 +99,29 @@ export default class Point {
 
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-
+      const form = this._pointEditComponent.getElement().querySelector(`form`);
+      if (form.classList.contains(`error-border`)) {
+        form.classList.remove(`error-border`);
+      }
       const formData = this._pointEditComponent.getData();
       const data = parseFormData(formData, destinations, this._allTypesOptions);
+
+      this._pointEditComponent.setData({
+        saveButtonText: `Saving...`,
+      });
+      this._pointEditComponent.disableForm(true);
+
       this._onDataChange(this, point, data);
     });
 
-    this._pointEditComponent
-        .setDeleteButtonClickHandler(() => this._onDataChange(this, point, null));
+    this._pointEditComponent.setDeleteButtonClickHandler(() => {
+      this._pointEditComponent.setData({
+        deleteButtonText: `Deleting...`,
+      });
+      this._pointEditComponent.disableForm(true);
+
+      this._onDataChange(this, point, null);
+    });
 
     this._pointEditComponent.setFavoriteButtonClickHandler(() => {
       const newPoint = PointModel.clone(point);
@@ -153,6 +170,24 @@ export default class Point {
     remove(this._pointEditComponent);
     remove(this._pointComponent);
     document.removeEventListener(`keydown`, this._onEscKeydown);
+  }
+
+  shake() {
+    this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._pointEditComponent.getElement().style.animation = ``;
+      this._pointComponent.getElement().style.animation = ``;
+
+      this._pointEditComponent.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+      });
+      this._pointEditComponent.getElement().querySelector(`form`)
+        .classList.add(`error-border`);
+      this._pointEditComponent.disableForm(false);
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   _replaceEditToPoint() {

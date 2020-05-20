@@ -137,6 +137,7 @@ export default class TripController {
     this._onViewChange();
     this._pointsModel.setFilter(FilterType.EVERYTHING);
     this._pointsModel.resetFilter();
+
     const tripDaysElement = this._tripDaysComponent.getElement();
     this._creatingPoint = new PointController(tripDaysElement, this._onDataChange, this._onViewChange);
     this._creatingPoint.render(EmptyTask, PointControllerMode.ADDING, this._destinations, this._allTypesOptions);
@@ -159,12 +160,24 @@ export default class TripController {
         pointController.destroy();
         this._updatePoints();
       } else {
-        this._pointsModel.addPoint(newData);
-        this._updatePoints();
+        this._api.createPoint(newData)
+          .then((pointModel) => {
+            this._pointsModel.addPoint(pointModel);
+            this._updatePoints();
+          })
+          .catch(() => {
+            pointController.shake();
+          });
       }
     } else if (newData === null) {
-      this._pointsModel.removePoint(oldData.id);
-      this._updatePoints();
+      this._api.deletePoint(oldData.id)
+        .then(() => {
+          this._pointsModel.removePoint(oldData.id);
+          this._updatePoints();
+        })
+        .catch(() => {
+          pointController.shake();
+        });
     } else {
       this._api.updatePoint(oldData.id, newData)
         .then((pointModel) => {
@@ -174,6 +187,9 @@ export default class TripController {
             pointController.render(pointModel, PointControllerMode.DEFAULT, this._destinations, this._allTypesOptions);
             this._updatePoints();
           }
+        })
+        .catch(() => {
+          pointController.shake();
         });
     }
   }
