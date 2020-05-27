@@ -97,7 +97,7 @@ export default class TripController {
     this._container.hide();
   }
 
-  render(destinations, allTypesOptions) {
+  render(destinations = [], allTypesOptions = []) {
     const container = this._container.getElement();
     const points = getSortedPoints(this._pointsModel.getPoints(), SortType.EVENT);
 

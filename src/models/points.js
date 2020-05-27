@@ -19,7 +19,7 @@ export default class Points {
     return this._points;
   }
 
-  setPoints(points) {
+  setPoints(points = []) {
     this._points = Array.from(points);
     this._callHandlers(this._dataChangeHandlers);
   }
