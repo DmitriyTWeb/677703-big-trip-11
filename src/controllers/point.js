@@ -13,7 +13,7 @@ export const Mode = {
   ADDING: `adding`,
 };
 
-export const EmptyTask = {
+export const EmptyPoint = {
   type: `bus`,
   destination: {},
   startDate: new Date().getTime(),
@@ -212,7 +212,7 @@ export default class Point {
 
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {
-        this._onDataChange(this, EmptyTask, null);
+        this._onDataChange(this, EmptyPoint, null);
       }
 
       this._replaceEditToPoint();

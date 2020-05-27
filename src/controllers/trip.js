@@ -2,7 +2,7 @@ import DayComponent from "../components/day.js";
 import NoPointsComponent from "../components/no-points.js";
 import {render, RenderPosition} from "../utils/render.js";
 import SortComponent, {SortType} from "../components/sort.js";
-import PointController, {Mode as PointControllerMode, EmptyTask} from "../controllers/point.js";
+import PointController, {Mode as PointControllerMode, EmptyPoint} from "../controllers/point.js";
 import TripDaysComponent from "../components/trip-days.js";
 import {isDatesEqual} from "../utils/common.js";
 import {FilterType} from "../const.js";
@@ -140,7 +140,7 @@ export default class TripController {
 
     const tripDaysElement = this._tripDaysComponent.getElement();
     this._creatingPoint = new PointController(tripDaysElement, this._onDataChange, this._onViewChange);
-    this._creatingPoint.render(EmptyTask, PointControllerMode.ADDING, this._destinations, this._allTypesOptions);
+    this._creatingPoint.render(EmptyPoint, PointControllerMode.ADDING, this._destinations, this._allTypesOptions);
   }
 
   _removePoints() {
@@ -154,7 +154,7 @@ export default class TripController {
   }
 
   _onDataChange(pointController, oldData, newData) {
-    if (oldData === EmptyTask) {
+    if (oldData === EmptyPoint) {
       this._creatingPoint = null;
       if (newData === null) {
         pointController.destroy();
