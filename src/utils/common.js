@@ -27,8 +27,13 @@ export const getDuration = (startDate, endDate) => {
   hours = hours ? `${leadingZero(hours)}H ` : ``;
   minutes = minutes ? `${leadingZero(minutes)}M` : ``;
 
+  if (days) {
+    return `${days} ${hours ? hours : `00H`} ${minutes ? minutes : `00M`}`;
+  } else if (hours) {
+    return `${hours} ${minutes ? minutes : `00M`}`;
+  }
 
-  return `${days}${hours}${minutes}`;
+  return `${minutes}`;
 };
 export const getPointCategory = (pointType) => {
   return activityCategory.some((it) => it === pointType) ? `activity` : `transfer`;
