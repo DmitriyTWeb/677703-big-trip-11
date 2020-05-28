@@ -33,6 +33,15 @@ const tripController = new TripController(eventsListComponent, pointsModel, api)
 const statisticsComponent = new StatisticsComponent(pointsModel);
 const loadingComponent = new LoadingComponent();
 
+const onEscKeydown = (evt) => {
+  const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+  if (isEscKey) {
+    newEventButton.disabled = false;
+    document.removeEventListener(`keydown`, onEscKeydown);
+  }
+};
+
 render(menuTitleElement, menuComponent, RenderPosition.AFTER);
 
 filtersController.render();
@@ -59,10 +68,15 @@ menuComponent.setOnClickHandler((menuItem) => {
 });
 
 newEventButton.addEventListener(`click`, () => {
+  newEventButton.disabled = true;
   statisticsComponent.hide();
   tripController.show();
+  document.addEventListener(`keydown`, onEscKeydown);
 
   pointsModel.setFilterResetHandler(filtersController.resetFilter);
+  tripController.setCreatingSuccessHandler(() => {
+    newEventButton.disabled = false;
+  });
   tripController.createPoint();
 });
 

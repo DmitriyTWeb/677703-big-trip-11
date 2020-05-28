@@ -82,6 +82,7 @@ export default class TripController {
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
+    this._onCreatingSuccessHandler = null;
 
     this._onSortTypeChange = this._onSortTypeChange.bind(this);
 
@@ -163,6 +164,7 @@ export default class TripController {
         this._api.createPoint(newData)
           .then((pointModel) => {
             this._pointsModel.addPoint(pointModel);
+            this._onCreatingSuccessHandler();
             this._updatePoints();
           })
           .catch(() => {
@@ -221,5 +223,9 @@ export default class TripController {
   resetSortType() {
     this._onSortTypeChange(SortType.EVENT);
     this._sortComponent.resetSortType();
+  }
+
+  setCreatingSuccessHandler(handler) {
+    this._onCreatingSuccessHandler = handler;
   }
 }

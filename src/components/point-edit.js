@@ -366,9 +366,9 @@ export default class EditPoint extends AbstractSmartComponent {
       allowInput: true,
       enableTime: true,
       altFormat: `d/m/Y H:i`,
+      time_24hr: true, //eslint-disable-line
       dateFormat: `U`,
-
-      defaultDate: this._point.startDate || `today`
+      defaultDate: this._point.startDate || `today`,
     });
 
     const endDateElement = this.getElement().querySelector(`[name="event-end-time"]`);
@@ -376,9 +376,15 @@ export default class EditPoint extends AbstractSmartComponent {
       altInput: true,
       allowInput: true,
       enableTime: true,
+      time_24hr: true, //eslint-disable-line
       altFormat: `d/m/Y H:i`,
       dateFormat: `U`,
       defaultDate: this._point.endDate || `today`,
+      onOpen: [
+        (selectedDates, dateStr, instance) => {
+          instance.set(`minDate`, `${startDateElement.value}`);
+        }
+      ],
     });
   }
 
@@ -396,23 +402,21 @@ export default class EditPoint extends AbstractSmartComponent {
     });
 
     element.querySelector(`[name="event-price"]`)
-      .addEventListener(`change`, (evt) => {
-        const newPrice = encode(evt.target.value);
+    .addEventListener(`input`, (evt) => {
+      const sourcePrice = evt.target.value;
+      const isInteger = /^\d+$/.test(sourcePrice);
 
-        if (newPrice === `` || isNaN(newPrice)) {
-          evt.target.setCustomValidity(`Please input correct price`);
-          return;
-        }
-        this._point.inputPrice = newPrice;
-
-        this.rerender();
-      });
+      if (!isInteger) {
+        evt.target.value = sourcePrice.slice(0, sourcePrice.length - 1);
+        return;
+      }
+    });
 
     element.querySelector(`[name="event-destination"]`)
       .addEventListener(`change`, (evt) => {
         const inputDestination = encode(evt.target.value);
         if (!this._destinations.some((item) => item.name === inputDestination)) {
-          evt.target.setCustomValidity(`Please choose one destination from the List`);
+          evt.target.setCustomValidity(`Please choose a destination from the List of supported destinations`);
           return;
         }
         const newDestination = this._destinations.find((item) => item.name === encode(evt.target.value));
