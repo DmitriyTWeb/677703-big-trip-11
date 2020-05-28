@@ -27,6 +27,9 @@ export const getDuration = (startDate, endDate) => {
   hours = hours ? `${leadingZero(hours)}H ` : ``;
   minutes = minutes ? `${leadingZero(minutes)}M` : ``;
 
+  if (days === `` && hours === `` && minutes === ``) {
+    return `00D 00H 00M`;
+  }
   if (days) {
     return `${days} ${hours ? hours : `00H`} ${minutes ? minutes : `00M`}`;
   } else if (hours) {

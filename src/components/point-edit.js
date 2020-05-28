@@ -387,6 +387,16 @@ export default class EditPoint extends AbstractSmartComponent {
         }
       ],
     });
+
+    this._flatpickrStart.config.onChange.push(() => {
+      if (endDateElement.value < startDateElement.value) {
+        const secondsInMinute = 60;
+        const milisecondsInSecond = 1000;
+        this._flatpickrEnd.setDate(
+            new Date((startDateElement.value * milisecondsInSecond) + secondsInMinute * milisecondsInSecond)
+        );
+      }
+    });
   }
 
   _subscribeOnEvents() {
@@ -428,17 +438,21 @@ export default class EditPoint extends AbstractSmartComponent {
   }
 
   _updateDestinationDetails(newDestination) {
+    const container = this.getElement().querySelector(`.event__details`);
     const oldDestinationElement = this.getElement().querySelector(`.event__section--destination`);
-    const parentElement = oldDestinationElement.parentElement;
 
-    if (!parentElement) {
-      return;
-    }
     const destinationDetailsTemplate = createDestinationDetailsTemplate(newDestination);
     const newDestinationElement = createElement(destinationDetailsTemplate);
 
-    parentElement.removeChild(oldDestinationElement);
-    parentElement.append(newDestinationElement);
+    if (!newDestinationElement && !oldDestinationElement) {
+      return;
+    } else if (newDestinationElement && oldDestinationElement) {
+      container.replaceChild(newDestinationElement, oldDestinationElement);
+    } else if (!newDestinationElement) {
+      container.removeChild(oldDestinationElement);
+    } else {
+      container.append(newDestinationElement);
+    }
   }
 
   _updateOptionsDetails(newType) {
