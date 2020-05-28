@@ -1,4 +1,5 @@
 import {getTypeOptions} from "../utils/common.js";
+import {encode} from "he";
 import moment from "moment";
 import PointComponent from "../components/point.js";
 import PointEditComponent from "../components/point-edit.js";
@@ -35,10 +36,10 @@ const getOptionByFormKey = (allOptions, key) => {
 const parseFormData = (formData, destinations, allTypesOptions) => {
   const type = formData.get(`event-type`);
   const typeOptions = getTypeOptions(allTypesOptions, type);
-  const destinationFromForm = formData.get(`event-destination`);
-  const startDate = formData.get(`event-start-time`) * 1000;
-  const endDate = formData.get(`event-end-time`) * 1000;
-  const inputPrice = parseInt(formData.get(`event-price`), 10);
+  const destinationFromForm = encode(formData.get(`event-destination`));
+  const startDate = parseInt(encode(formData.get(`event-start-time`)), 10) * 1000;
+  const endDate = parseInt(encode(formData.get(`event-end-time`)), 10) * 1000;
+  const inputPrice = parseInt(encode(formData.get(`event-price`)), 10);
 
   const destination = destinations.find((item) => item.name === destinationFromForm);
 
