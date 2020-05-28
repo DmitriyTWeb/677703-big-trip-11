@@ -1,4 +1,5 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
+import {createElement} from "../utils/render.js";
 import {capitalizeFirstLetter} from "../utils/common.js";
 import {getPointCategory} from "../utils/common.js";
 import {encode} from "he";
@@ -78,7 +79,7 @@ const createOtionTemplate = (option, checked) => {
   );
 };
 
-const createOtionsTemplate = (typeOptions, pointOptions) => {
+const createOtionsTemplate = (typeOptions, pointOptions = []) => {
   if (!typeOptions || typeOptions.length === 0) {
     return ``;
   }
@@ -395,9 +396,10 @@ export default class EditPoint extends AbstractSmartComponent {
     Array.from(radioButtons).forEach((button) => {
       button.addEventListener(`change`, (evt) => {
         const newType = evt.target.value;
-        this._point.type = newType;
+        const typeToggleElement = this.getElement().querySelector(`.event__type-toggle`);
 
-        this.rerender();
+        typeToggleElement.checked = false;
+        this._updateOptionsDetails(newType);
       });
     });
 
@@ -416,13 +418,52 @@ export default class EditPoint extends AbstractSmartComponent {
       .addEventListener(`change`, (evt) => {
         const inputDestination = encode(evt.target.value);
         if (!this._destinations.some((item) => item.name === inputDestination)) {
-          evt.target.setCustomValidity(`Please choose a destination from the List of supported destinations`);
+          evt.target.setCustomValidity(`Please choose a destination from the list of supported destinations`);
           return;
         }
         const newDestination = this._destinations.find((item) => item.name === encode(evt.target.value));
-        this._point.destination = newDestination;
 
-        this.rerender();
+        this._updateDestinationDetails(newDestination);
       });
+  }
+
+  _updateDestinationDetails(newDestination) {
+    const oldDestinationElement = this.getElement().querySelector(`.event__section--destination`);
+    const parentElement = oldDestinationElement.parentElement;
+
+    if (!parentElement) {
+      return;
+    }
+    const destinationDetailsTemplate = createDestinationDetailsTemplate(newDestination);
+    const newDestinationElement = createElement(destinationDetailsTemplate);
+
+    parentElement.removeChild(oldDestinationElement);
+    parentElement.append(newDestinationElement);
+  }
+
+  _updateOptionsDetails(newType) {
+    const container = this.getElement().querySelector(`.event__details`);
+    const oldOptionsElement = container.querySelector(`.event__section--offers`);
+
+    const typeOptions = this._allTypesOptions.find((item) => item.type === newType);
+    const newOptionsTemplate = createOtionsTemplate(typeOptions.options);
+    const newOptionsElement = createElement(newOptionsTemplate);
+
+    const typeOutputElement = this.getElement().querySelector(`.event__type-output`);
+    const pointCategory = getPointCategory(newType);
+    const header = `${capitalizeFirstLetter(newType)} ${pointCategory.toLowerCase() === `activity` ? `in` : `to`}`;
+
+    typeOutputElement.innerHTML = header;
+
+    if (!newOptionsElement && !oldOptionsElement) {
+      return;
+    }
+    if (oldOptionsElement && newOptionsElement) {
+      container.replaceChild(newOptionsElement, oldOptionsElement);
+    } else if (!newOptionsElement) {
+      container.removeChild(oldOptionsElement);
+    } else {
+      container.prepend(newOptionsElement);
+    }
   }
 }
