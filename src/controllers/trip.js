@@ -116,19 +116,6 @@ export default class TripController {
     this._renderPoints(getSortedPoints(points, SortType.EVENT));
   }
 
-  _renderPoints(points, isSortingOn = false) {
-    const tripDaysElement = this._tripDaysComponent.getElement();
-    tripDaysElement.innerHTML = ``;
-
-    this._renderedPointControllers = renderPoints(
-        tripDaysElement,
-        points,
-        this._destinations,
-        this._allTypesOptions,
-        isSortingOn,
-        this._onDataChange, this._onViewChange);
-  }
-
   createPoint() {
     if (this._creatingPoint) {
       return;
@@ -144,6 +131,24 @@ export default class TripController {
     this._creatingPoint.render(EmptyPoint, PointControllerMode.ADDING, this._destinations, this._allTypesOptions);
   }
 
+  resetSortType() {
+    this._onSortTypeChange(SortType.EVENT);
+    this._sortComponent.resetSortType();
+  }
+
+  _renderPoints(points, isSortingOn = false) {
+    const tripDaysElement = this._tripDaysComponent.getElement();
+    tripDaysElement.innerHTML = ``;
+
+    this._renderedPointControllers = renderPoints(
+        tripDaysElement,
+        points,
+        this._destinations,
+        this._allTypesOptions,
+        isSortingOn,
+        this._onDataChange, this._onViewChange);
+  }
+
   _removePoints() {
     this._renderedPointControllers.forEach((pointController) => pointController.destroy());
     this._renderedPointControllers = [];
@@ -151,7 +156,8 @@ export default class TripController {
 
   _updatePoints() {
     this._removePoints();
-    this._renderPoints(this._pointsModel.getPoints());
+    const points = getSortedPoints(this._pointsModel.getPoints(), SortType.EVENT);
+    this._renderPoints(points);
   }
 
   _onDataChange(pointController, oldData, newData) {
@@ -218,11 +224,6 @@ export default class TripController {
 
     this._removePoints();
     this._renderPoints(sortedPoints, isSortingOn);
-  }
-
-  resetSortType() {
-    this._onSortTypeChange(SortType.EVENT);
-    this._sortComponent.resetSortType();
   }
 
   setCreatingSuccessHandler(handler) {
