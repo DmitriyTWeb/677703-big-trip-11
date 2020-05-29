@@ -54,6 +54,9 @@ const renderMoneyChart = (moneyCtx, points) => {
   const typesCost = types.map((type) => calculateTypeCost(type, points));
 
   moneyCtx.height = BAR_HEIGHT * types.length;
+  if (typesCost.length === 1) {
+    moneyCtx.height = BAR_HEIGHT * 2;
+  }
 
   return new Chart(moneyCtx, {
     plugins: [ChartDataLabels],
@@ -127,6 +130,9 @@ const renderTransportChart = (transportCtx, points) => {
   const transportLabels = Object.keys(typeCount).map((item) => item.toUpperCase());
   const transportData = Object.values(typeCount);
   transportCtx.height = BAR_HEIGHT * transportLabels.length;
+  if (transportData.length === 1) {
+    transportCtx.height = BAR_HEIGHT * 2;
+  }
 
   return new Chart(transportCtx, {
     plugins: [ChartDataLabels],
@@ -208,6 +214,9 @@ const renderTimeChart = (timeCtx, points) => {
   const timeLabels = Object.keys(typeTimes).map((item) => item.toUpperCase());
   const timeData = Object.values(typeTimes).map((item) => Math.round(item.asHours()));
   timeCtx.height = BAR_HEIGHT * timeLabels.length;
+  if (timeData.length === 1) {
+    timeCtx.height = BAR_HEIGHT * 2;
+  }
 
   return new Chart(timeCtx, {
     plugins: [ChartDataLabels],
@@ -299,9 +308,7 @@ export default class Statistics extends AbstractSmartComponent {
   constructor(pointsModel) {
     super();
 
-    this._points = pointsModel.getPointsAll();
-    this._dateFrom = null;
-    this._dateTo = null;
+    this._pointsModel = pointsModel;
 
     this._moneyChart = null;
     this._transportChart = null;
@@ -314,22 +321,19 @@ export default class Statistics extends AbstractSmartComponent {
 
   show() {
     super.show();
-    this.rerender(this._points, this._dateFrom, this._dateTo);
+    this.rerender();
   }
 
   recoveryListener() {}
 
-  rerender(points, dateFrom, dateTo) {
-    this._points = points;
-    this._dateFrom = dateFrom;
-    this._dateTo = dateTo;
-
+  rerender() {
     super.rerender();
 
     this._renderCharts();
   }
 
   _renderCharts() {
+    const points = this._pointsModel.getPointsAll();
     const element = this.getElement();
 
     const moneyCtx = element.querySelector(`.statistics__chart--money`);
@@ -337,11 +341,11 @@ export default class Statistics extends AbstractSmartComponent {
     const timeCtx = element.querySelector(`.statistics__chart--time`);
 
     // устанавливаем интервал по всему временному диапозону времени
-    this._dateFrom = new Date(Math.min(...this._points.map((point) => point.startDate)));
-    this._dateTo = new Date(Math.max(...this._points.map((point) => point.endDate)));
+    this._dateFrom = new Date(Math.min(...points.map((point) => point.startDate)));
+    this._dateTo = new Date(Math.max(...points.map((point) => point.endDate)));
 
     this._resetCharts();
-    const pointsInDateRange = getPointsByDateRange(this._points, this._dateFrom, this._dateTo);
+    const pointsInDateRange = getPointsByDateRange(points, this._dateFrom, this._dateTo);
     this._moneyChart = renderMoneyChart(moneyCtx, pointsInDateRange);
     this._transportChart = renderTransportChart(transportCtx, pointsInDateRange);
     this._timeChart = renderTimeChart(timeCtx, pointsInDateRange);
