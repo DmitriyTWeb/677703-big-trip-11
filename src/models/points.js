@@ -29,6 +29,18 @@ export default class Points {
     this._callHandlers(this._filterChangeHandlers);
   }
 
+  setDataChangeHandler(handler) {
+    this._dataChangeHandlers.push(handler);
+  }
+
+  setFilterChangeHandler(handler) {
+    this._filterChangeHandlers.push(handler);
+  }
+
+  setFilterResetHandler(handler) {
+    this._filterResetHandler = handler;
+  }
+
   removePoint(id) {
     const index = this._points.findIndex((it) => it.id === id);
 
@@ -63,21 +75,9 @@ export default class Points {
     this._callHandlers(this._dataChangeHandlers);
   }
 
-  setDataChangeHandler(handler) {
-    this._dataChangeHandlers.push(handler);
-  }
-
-  setFilterChangeHandler(handler) {
-    this._filterChangeHandlers.push(handler);
-  }
-
   resetFilter() {
     this.setFilter(FilterType.EVERYTHING);
     this._filterResetHandler();
-  }
-
-  setFilterResetHandler(handler) {
-    this._filterResetHandler = handler;
   }
 
   _callHandlers(handlers) {

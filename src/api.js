@@ -30,6 +30,18 @@ const API = class {
       .then(Point.parsePoints);
   }
 
+  getDesinations() {
+    return this._load({url: `destinations`})
+      .then((response) => response.json())
+      .then(Destination.parsePoints);
+  }
+
+  getOffers() {
+    return this._load({url: `offers`})
+      .then((response) => response.json())
+      .then(Offer.parseOffers);
+  }
+
   createPoint(point) {
     return this._load({
       url: `points`,
@@ -58,18 +70,6 @@ const API = class {
 
   deletePoint(id) {
     return this._load({url: `points/${id}`, method: Method.DELETE});
-  }
-
-  getDesinations() {
-    return this._load({url: `destinations`})
-      .then((response) => response.json())
-      .then(Destination.parsePoints);
-  }
-
-  getOffers() {
-    return this._load({url: `offers`})
-      .then((response) => response.json())
-      .then(Offer.parseOffers);
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {

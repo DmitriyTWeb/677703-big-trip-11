@@ -53,13 +53,13 @@ export default class Filter {
     }
   }
 
+  resetFilter() {
+    this._filterComponent.resetFilter();
+  }
+
   _filterChangeHandler(filterType) {
     this._pointsModel.setFilter(filterType);
     this._activeFilterType = filterType;
-  }
-
-  resetFilter() {
-    this._filterComponent.resetFilter();
   }
 
   _onDataChange() {

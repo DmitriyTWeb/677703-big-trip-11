@@ -290,6 +290,11 @@ export default class EditPoint extends AbstractSmartComponent {
     return createEditPointTemplate(this._point, this._destinations, this._allTypesOptions, this._externalData);
   }
 
+  getData() {
+    const form = this.getElement().querySelector(`form`);
+    return new FormData(form);
+  }
+
   setData(data) {
     this._externalData = Object.assign({}, DefaultData, data);
     this.rerender();
@@ -321,11 +326,6 @@ export default class EditPoint extends AbstractSmartComponent {
 
   reset() {
     this.rerender();
-  }
-
-  getData() {
-    const form = this.getElement().querySelector(`form`);
-    return new FormData(form);
   }
 
   disableForm(disabled) {

@@ -83,6 +83,12 @@ export default class Point {
     this._allTypesOptions = null;
   }
 
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceEditToPoint();
+    }
+  }
+
   render(point, mode, destinations, allTypesOptions) {
     this._point = point;
     this._allTypesOptions = allTypesOptions;
@@ -166,12 +172,6 @@ export default class Point {
         break;
     }
 
-  }
-
-  setDefaultView() {
-    if (this._mode !== Mode.DEFAULT) {
-      this._replaceEditToPoint();
-    }
   }
 
   destroy() {
