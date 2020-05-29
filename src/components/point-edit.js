@@ -275,7 +275,7 @@ export default class EditPoint extends AbstractSmartComponent {
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
     this._deleteButtonClickHandler = null;
-
+    this._rollupButtonClickHandler = null;
     this._submitHandler = null;
     this._favoriteHandler = null;
     this._typeChangeHandler = null;
@@ -339,11 +339,23 @@ export default class EditPoint extends AbstractSmartComponent {
   }
 
   setDeleteButtonClickHandler(handler) {
-
     this.getElement().querySelector(`.event__reset-btn`)
       .addEventListener(`click`, handler);
 
     this._deleteButtonClickHandler = handler;
+  }
+
+  setRollupButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
+
+    this._rollupButtonClickHandler = handler;
+  }
+
+  deleteRollupButtonClickHandler() {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .removeEventListener(`click`, this._rollupClickHandler);
+    this._rollupButtonClickHandler = null;
   }
 
   setFavoriteButtonClickHandler(handler) {
@@ -402,8 +414,8 @@ export default class EditPoint extends AbstractSmartComponent {
   _subscribeOnEvents() {
     const element = this.getElement();
 
-    const radioButtons = element.querySelectorAll(`[name="event-type"]`);
-    Array.from(radioButtons).forEach((button) => {
+    const radioButtonElements = element.querySelectorAll(`[name="event-type"]`);
+    Array.from(radioButtonElements).forEach((button) => {
       button.addEventListener(`change`, (evt) => {
         const newType = evt.target.value;
         const typeToggleElement = this.getElement().querySelector(`.event__type-toggle`);
@@ -438,8 +450,8 @@ export default class EditPoint extends AbstractSmartComponent {
   }
 
   _updateDestinationDetails(newDestination) {
-    const container = this.getElement().querySelector(`.event__details`);
-    const oldDestinationElement = this.getElement().querySelector(`.event__section--destination`);
+    const containerElement = this.getElement().querySelector(`.event__details`);
+    const oldDestinationElement = containerElement.querySelector(`.event__section--destination`);
 
     const destinationDetailsTemplate = createDestinationDetailsTemplate(newDestination);
     const newDestinationElement = createElement(destinationDetailsTemplate);
@@ -447,17 +459,17 @@ export default class EditPoint extends AbstractSmartComponent {
     if (!newDestinationElement && !oldDestinationElement) {
       return;
     } else if (newDestinationElement && oldDestinationElement) {
-      container.replaceChild(newDestinationElement, oldDestinationElement);
+      containerElement.replaceChild(newDestinationElement, oldDestinationElement);
     } else if (!newDestinationElement) {
-      container.removeChild(oldDestinationElement);
+      containerElement.removeChild(oldDestinationElement);
     } else {
-      container.append(newDestinationElement);
+      containerElement.append(newDestinationElement);
     }
   }
 
   _updateOptionsDetails(newType) {
-    const container = this.getElement().querySelector(`.event__details`);
-    const oldOptionsElement = container.querySelector(`.event__section--offers`);
+    const containerElement = this.getElement().querySelector(`.event__details`);
+    const oldOptionsElement = containerElement.querySelector(`.event__section--offers`);
 
     const typeOptions = this._allTypesOptions.find((item) => item.type === newType);
     const newOptionsTemplate = createOtionsTemplate(typeOptions.options);
@@ -473,11 +485,11 @@ export default class EditPoint extends AbstractSmartComponent {
       return;
     }
     if (oldOptionsElement && newOptionsElement) {
-      container.replaceChild(newOptionsElement, oldOptionsElement);
+      containerElement.replaceChild(newOptionsElement, oldOptionsElement);
     } else if (!newOptionsElement) {
-      container.removeChild(oldOptionsElement);
+      containerElement.removeChild(oldOptionsElement);
     } else {
-      container.prepend(newOptionsElement);
+      containerElement.prepend(newOptionsElement);
     }
   }
 }

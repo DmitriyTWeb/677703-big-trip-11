@@ -80,13 +80,13 @@ export default class TripController {
     this._creatingPoint = null;
 
     this._onDataChange = this._onDataChange.bind(this);
-    this._onViewChange = this._onViewChange.bind(this);
+    this._viewChangeHandler = this._viewChangeHandler.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onCreatingSuccessHandler = null;
 
-    this._onSortTypeChange = this._onSortTypeChange.bind(this);
+    this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
 
-    this._sortComponent.setSortTypeChangeHandler(this._onSortTypeChange);
+    this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
 
@@ -121,18 +121,18 @@ export default class TripController {
       return;
     }
     this._sortComponent.resetSortType();
-    this._onSortTypeChange(SortType.EVENT);
-    this._onViewChange();
+    this._sortTypeChangeHandler(SortType.EVENT);
+    this._viewChangeHandler();
     this._pointsModel.setFilter(FilterType.EVERYTHING);
     this._pointsModel.resetFilter();
 
     const tripDaysElement = this._tripDaysComponent.getElement();
-    this._creatingPoint = new PointController(tripDaysElement, this._onDataChange, this._onViewChange);
+    this._creatingPoint = new PointController(tripDaysElement, this._onDataChange, this._viewChangeHandler);
     this._creatingPoint.render(EmptyPoint, PointControllerMode.ADDING, this._destinations, this._allTypesOptions);
   }
 
   resetSortType() {
-    this._onSortTypeChange(SortType.EVENT);
+    this._sortTypeChangeHandler(SortType.EVENT);
     this._sortComponent.resetSortType();
   }
 
@@ -146,7 +146,7 @@ export default class TripController {
         this._destinations,
         this._allTypesOptions,
         isSortingOn,
-        this._onDataChange, this._onViewChange);
+        this._onDataChange, this._viewChangeHandler);
   }
 
   _removePoints() {
@@ -202,7 +202,7 @@ export default class TripController {
     }
   }
 
-  _onViewChange() {
+  _viewChangeHandler() {
     this._renderedPointControllers.forEach((it) => it.setDefaultView());
   }
 
@@ -211,7 +211,7 @@ export default class TripController {
     this._updatePoints();
   }
 
-  _onSortTypeChange(sortType) {
+  _sortTypeChangeHandler(sortType) {
     const sortedPoints = getSortedPoints(this._pointsModel.getPoints(), sortType);
     const isSortingOn = sortType !== SortType.EVENT ? true : false;
     const dayTitle = this._sortComponent.getElement().querySelector(`.trip-sort__item`);

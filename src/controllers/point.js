@@ -78,7 +78,8 @@ export default class Point {
 
     this._pointComponent = null;
     this._pointEditComponent = null;
-    this._onEscKeydown = this._onEscKeydown.bind(this);
+    this._escKeydownHandler = this._escKeydownHandler.bind(this);
+    this._rollupClickHandler = this._rollupClickHandler.bind(this);
     this._allTypesOptions = null;
   }
 
@@ -95,7 +96,9 @@ export default class Point {
 
     this._pointComponent.setRollupButtonClickHandler(() => {
       this._replacePointToEdit();
-      document.addEventListener(`keydown`, this._onEscKeydown);
+
+      this._pointEditComponent.setRollupButtonClickHandler(this._rollupClickHandler);
+      document.addEventListener(`keydown`, this._escKeydownHandler);
     });
 
     this._pointEditComponent.setSubmitHandler((evt) => {
@@ -149,7 +152,7 @@ export default class Point {
           remove(oldPointComponent);
           remove(oldPointEditComponent);
         }
-        document.addEventListener(`keydown`, this._onEscKeydown);
+        document.addEventListener(`keydown`, this._escKeydownHandler);
         render(this._container, this._pointEditComponent, RenderPosition.AFTERBEGIN);
         this._pointEditComponent.getElement().querySelector(`.event__reset-btn`)
             .textContent = `Cancel`;
@@ -174,7 +177,7 @@ export default class Point {
   destroy() {
     remove(this._pointEditComponent);
     remove(this._pointComponent);
-    document.removeEventListener(`keydown`, this._onEscKeydown);
+    document.removeEventListener(`keydown`, this._escKeydownHandler);
   }
 
   shake() {
@@ -196,7 +199,7 @@ export default class Point {
   }
 
   _replaceEditToPoint() {
-    document.removeEventListener(`keydown`, this._onEscKeydown);
+    document.removeEventListener(`keydown`, this._escKeydownHandler);
     this._pointEditComponent.reset();
 
     if (document.contains(this._pointEditComponent.getElement())) {
@@ -212,7 +215,7 @@ export default class Point {
     this._mode = Mode.EDIT;
   }
 
-  _onEscKeydown(evt) {
+  _escKeydownHandler(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
@@ -221,7 +224,12 @@ export default class Point {
       }
 
       this._replaceEditToPoint();
-      document.removeEventListener(`keydown`, this._onEscKeydown);
+      document.removeEventListener(`keydown`, this._escKeydownHandler);
     }
+  }
+
+  _rollupClickHandler() {
+    this._replaceEditToPoint();
+    this._pointEditComponent.deleteRollupButtonClickHandler();
   }
 }
