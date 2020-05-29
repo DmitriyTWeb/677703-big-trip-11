@@ -83,11 +83,19 @@ export default class TripController {
     this._viewChangeHandler = this._viewChangeHandler.bind(this);
     this._onFilterChange = this._onFilterChange.bind(this);
     this._onCreatingSuccessHandler = null;
+    this._cancelButtonClickHandler = null;
 
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
 
     this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
+  }
+  setCreatingSuccessHandler(handler) {
+    this._onCreatingSuccessHandler = handler;
+  }
+
+  setCancelButtonClickHandler(handler) {
+    this._cancelButtonClickHandler = handler;
   }
 
   show() {
@@ -128,6 +136,8 @@ export default class TripController {
 
     const tripDaysElement = this._tripDaysComponent.getElement();
     this._creatingPoint = new PointController(tripDaysElement, this._onDataChange, this._viewChangeHandler);
+    this._creatingPoint.setCancelButtonClickHandler(this._cancelButtonClickHandler);
+
     this._creatingPoint.render(EmptyPoint, PointControllerMode.ADDING, this._destinations, this._allTypesOptions);
   }
 
@@ -226,7 +236,5 @@ export default class TripController {
     this._renderPoints(sortedPoints, isSortingOn);
   }
 
-  setCreatingSuccessHandler(handler) {
-    this._onCreatingSuccessHandler = handler;
-  }
+
 }

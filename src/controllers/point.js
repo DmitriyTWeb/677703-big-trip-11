@@ -81,12 +81,18 @@ export default class Point {
     this._escKeydownHandler = this._escKeydownHandler.bind(this);
     this._rollupClickHandler = this._rollupClickHandler.bind(this);
     this._allTypesOptions = null;
+
+    this._cancelButtonClickHandler = null;
   }
 
   setDefaultView() {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceEditToPoint();
     }
+  }
+
+  setCancelButtonClickHandler(handler) {
+    this._cancelButtonClickHandler = handler;
   }
 
   render(point, mode, destinations, allTypesOptions) {
@@ -125,6 +131,10 @@ export default class Point {
     });
 
     this._pointEditComponent.setDeleteButtonClickHandler(() => {
+      if (this._cancelButtonClickHandler) {
+        this._cancelButtonClickHandler();
+      }
+
       this._pointEditComponent.setData({
         deleteButtonText: `Deleting...`,
       });

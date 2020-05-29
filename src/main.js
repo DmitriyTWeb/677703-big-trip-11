@@ -77,6 +77,10 @@ newEventButton.addEventListener(`click`, () => {
   tripController.setCreatingSuccessHandler(() => {
     newEventButton.disabled = false;
   });
+
+  tripController.setCancelButtonClickHandler(() => {
+    newEventButton.disabled = false;
+  });
   tripController.createPoint();
 });
 
