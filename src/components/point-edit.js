@@ -427,11 +427,11 @@ export default class EditPoint extends AbstractSmartComponent {
 
     element.querySelector(`[name="event-price"]`)
     .addEventListener(`input`, (evt) => {
-      const sourcePrice = Number(encode(evt.target.value));
+      const sourcePrice = evt.target.value;
       const isInteger = /^\d+$/.test(sourcePrice);
 
       if (!isInteger) {
-        evt.target.value = sourcePrice.slice(0, sourcePrice.length - 1);
+        evt.target.value = encode(sourcePrice.slice(0, sourcePrice.length - 1));
         return;
       }
     });
