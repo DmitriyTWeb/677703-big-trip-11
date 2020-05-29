@@ -1,15 +1,15 @@
 export default class Destination {
-  constructor(data) {
-    this.description = data[`description`];
-    this.name = data[`name`];
-    this.pictures = data[`pictures`];
+  constructor(destination) {
+    this.description = destination[`description`];
+    this.name = destination[`name`];
+    this.pictures = destination[`pictures`];
   }
 
-  static parseDestination(data) {
-    return new Destination(data);
+  static parseDestination(destination) {
+    return new Destination(destination);
   }
 
-  static parseDestinations(data) {
-    return data.map(Destination.parseDestination);
+  static parseDestinations(destination) {
+    return destination.map(Destination.parseDestination);
   }
 }
