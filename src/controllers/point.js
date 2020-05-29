@@ -125,8 +125,12 @@ export default class Point {
     });
 
     this._pointEditComponent.setFavoriteButtonClickHandler(() => {
+      if (!point.id) {
+        return;
+      }
       const newPoint = PointModel.clone(point);
       newPoint.isFavorite = !newPoint.isFavorite;
+
       this._onDataChange(this, point, newPoint);
     });
 
