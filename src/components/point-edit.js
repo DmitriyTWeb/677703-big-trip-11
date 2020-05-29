@@ -415,7 +415,7 @@ export default class EditPoint extends AbstractSmartComponent {
 
     element.querySelector(`[name="event-price"]`)
     .addEventListener(`input`, (evt) => {
-      const sourcePrice = evt.target.value;
+      const sourcePrice = Number(encode(evt.target.value));
       const isInteger = /^\d+$/.test(sourcePrice);
 
       if (!isInteger) {
@@ -431,7 +431,7 @@ export default class EditPoint extends AbstractSmartComponent {
           evt.target.setCustomValidity(`Please choose a destination from the list of supported destinations`);
           return;
         }
-        const newDestination = this._destinations.find((item) => item.name === encode(evt.target.value));
+        const newDestination = this._destinations.find((item) => item.name === inputDestination);
 
         this._updateDestinationDetails(newDestination);
       });
