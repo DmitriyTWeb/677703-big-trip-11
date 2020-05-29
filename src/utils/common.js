@@ -1,4 +1,4 @@
-import {activityCategory} from "../const.js";
+import {activityCategoryTypes} from "../const.js";
 import moment from "moment";
 
 const leadingZero = (value) => {
@@ -39,7 +39,7 @@ export const getDuration = (startDate, endDate) => {
   return `${minutes}`;
 };
 export const getPointCategory = (pointType) => {
-  return activityCategory.some((it) => it === pointType) ? `activity` : `transfer`;
+  return activityCategoryTypes.some((it) => it === pointType) ? `activity` : `transfer`;
 };
 export const isDatesEqual = (firstDate, secondDate) => {
   firstDate = new Date(firstDate);

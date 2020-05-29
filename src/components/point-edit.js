@@ -390,10 +390,10 @@ export default class EditPoint extends AbstractSmartComponent {
 
     this._flatpickrStart.config.onChange.push(() => {
       if (endDateElement.value < startDateElement.value) {
-        const secondsInMinute = 60;
-        const milisecondsInSecond = 1000;
+        const SECONDS_IN_MINUTE = 60;
+        const MILLISECONDS_IN_SECOND = 1000;
         this._flatpickrEnd.setDate(
-            new Date((startDateElement.value * milisecondsInSecond) + secondsInMinute * milisecondsInSecond)
+            new Date((startDateElement.value * MILLISECONDS_IN_SECOND) + SECONDS_IN_MINUTE * MILLISECONDS_IN_SECOND)
         );
       }
     });

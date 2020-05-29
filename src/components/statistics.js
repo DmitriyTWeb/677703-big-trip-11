@@ -1,7 +1,7 @@
 import AbstractSmartComponent from "./abstract-smart-component";
 import Chart from "chart.js";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import {activityCategory} from "../const.js";
+import {activityCategoryTypes} from "../const.js";
 import moment from "moment";
 
 const BAR_HEIGHT = 55;
@@ -22,7 +22,7 @@ const calculateTransportTypeNumbers = (points) => {
   const typeCount = {};
 
   points.forEach((point) => {
-    if (!activityCategory.find((actitvityType) => actitvityType === point.type)) {
+    if (!activityCategoryTypes.find((actitvityType) => actitvityType === point.type)) {
       if (!typeCount.hasOwnProperty(point.type)) {
         typeCount[`${point.type}`] = 1;
       } else {
