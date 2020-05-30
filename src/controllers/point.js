@@ -1,9 +1,12 @@
 import {getTypeOptions} from "../utils/common.js";
+import {encode} from "he";
 import moment from "moment";
 import PointComponent from "../components/point.js";
 import PointEditComponent from "../components/point-edit.js";
 import PointModel from "../models/point.js";
 import {render, replace, RenderPosition, remove} from "../utils/render.js";
+
+const SHAKE_ANIMATION_TIMEOUT = 600;
 
 export const Mode = {
   DEFAULT: `default`,
@@ -11,7 +14,7 @@ export const Mode = {
   ADDING: `adding`,
 };
 
-export const EmptyTask = {
+export const EmptyPoint = {
   type: `bus`,
   destination: {},
   startDate: new Date().getTime(),
@@ -33,10 +36,10 @@ const getOptionByFormKey = (allOptions, key) => {
 const parseFormData = (formData, destinations, allTypesOptions) => {
   const type = formData.get(`event-type`);
   const typeOptions = getTypeOptions(allTypesOptions, type);
-  const destinationFromForm = formData.get(`event-destination`);
-  const startDate = formData.get(`event-start-time`) * 1000;
-  const endDate = formData.get(`event-end-time`) * 1000;
-  const inputPrice = parseInt(formData.get(`event-price`), 10);
+  const destinationFromForm = encode(formData.get(`event-destination`));
+  const startDate = parseInt(encode(formData.get(`event-start-time`)), 10) * 1000;
+  const endDate = parseInt(encode(formData.get(`event-end-time`)), 10) * 1000;
+  const inputPrice = parseInt(encode(formData.get(`event-price`)), 10);
 
   const destination = destinations.find((item) => item.name === destinationFromForm);
 
@@ -75,8 +78,21 @@ export default class Point {
 
     this._pointComponent = null;
     this._pointEditComponent = null;
-    this._onEscKeydown = this._onEscKeydown.bind(this);
+    this._escKeydownHandler = this._escKeydownHandler.bind(this);
+    this._rollupClickHandler = this._rollupClickHandler.bind(this);
     this._allTypesOptions = null;
+
+    this._cancelButtonClickHandler = null;
+  }
+
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceEditToPoint();
+    }
+  }
+
+  setCancelButtonClickHandler(handler) {
+    this._cancelButtonClickHandler = handler;
   }
 
   render(point, mode, destinations, allTypesOptions) {
@@ -92,23 +108,48 @@ export default class Point {
 
     this._pointComponent.setRollupButtonClickHandler(() => {
       this._replacePointToEdit();
-      document.addEventListener(`keydown`, this._onEscKeydown);
+
+      this._pointEditComponent.setRollupButtonClickHandler(this._rollupClickHandler);
+      document.addEventListener(`keydown`, this._escKeydownHandler);
     });
 
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-
+      const form = this._pointEditComponent.getElement().querySelector(`form`);
+      if (form.classList.contains(`error-border`)) {
+        form.classList.remove(`error-border`);
+      }
       const formData = this._pointEditComponent.getData();
       const data = parseFormData(formData, destinations, this._allTypesOptions);
+
+      this._pointEditComponent.setData({
+        saveButtonText: `Saving...`,
+      });
+      this._pointEditComponent.disableForm(true);
+
       this._onDataChange(this, point, data);
     });
 
-    this._pointEditComponent
-        .setDeleteButtonClickHandler(() => this._onDataChange(this, point, null));
+    this._pointEditComponent.setDeleteButtonClickHandler(() => {
+      if (this._cancelButtonClickHandler) {
+        this._cancelButtonClickHandler();
+      }
+
+      this._pointEditComponent.setData({
+        deleteButtonText: `Deleting...`,
+      });
+      this._pointEditComponent.disableForm(true);
+
+      this._onDataChange(this, point, null);
+    });
 
     this._pointEditComponent.setFavoriteButtonClickHandler(() => {
+      if (!point.id) {
+        return;
+      }
       const newPoint = PointModel.clone(point);
       newPoint.isFavorite = !newPoint.isFavorite;
+
       this._onDataChange(this, point, newPoint);
     });
 
@@ -127,7 +168,7 @@ export default class Point {
           remove(oldPointComponent);
           remove(oldPointEditComponent);
         }
-        document.addEventListener(`keydown`, this._onEscKeydown);
+        document.addEventListener(`keydown`, this._escKeydownHandler);
         render(this._container, this._pointEditComponent, RenderPosition.AFTERBEGIN);
         this._pointEditComponent.getElement().querySelector(`.event__reset-btn`)
             .textContent = `Cancel`;
@@ -143,20 +184,32 @@ export default class Point {
 
   }
 
-  setDefaultView() {
-    if (this._mode !== Mode.DEFAULT) {
-      this._replaceEditToPoint();
-    }
-  }
-
   destroy() {
     remove(this._pointEditComponent);
     remove(this._pointComponent);
-    document.removeEventListener(`keydown`, this._onEscKeydown);
+    document.removeEventListener(`keydown`, this._escKeydownHandler);
+  }
+
+  shake() {
+    this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._pointEditComponent.getElement().style.animation = ``;
+      this._pointComponent.getElement().style.animation = ``;
+
+      this._pointEditComponent.setData({
+        saveButtonText: `Save`,
+        deleteButtonText: `Delete`,
+      });
+      this._pointEditComponent.getElement().querySelector(`form`)
+        .classList.add(`error-border`);
+      this._pointEditComponent.disableForm(false);
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 
   _replaceEditToPoint() {
-    document.removeEventListener(`keydown`, this._onEscKeydown);
+    document.removeEventListener(`keydown`, this._escKeydownHandler);
     this._pointEditComponent.reset();
 
     if (document.contains(this._pointEditComponent.getElement())) {
@@ -172,16 +225,21 @@ export default class Point {
     this._mode = Mode.EDIT;
   }
 
-  _onEscKeydown(evt) {
+  _escKeydownHandler(evt) {
     const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
 
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {
-        this._onDataChange(this, EmptyTask, null);
+        this._onDataChange(this, EmptyPoint, null);
       }
 
       this._replaceEditToPoint();
-      document.removeEventListener(`keydown`, this._onEscKeydown);
+      document.removeEventListener(`keydown`, this._escKeydownHandler);
     }
+  }
+
+  _rollupClickHandler() {
+    this._replaceEditToPoint();
+    this._pointEditComponent.deleteRollupButtonClickHandler();
   }
 }

@@ -2,7 +2,9 @@ import AbstractComponent from "./abstract-component.js";
 import {capitalizeFirstLetter, formatTime, getDuration, getPointCategory} from "../utils/common.js";
 
 const createCheckedOptionsTemplate = (options) => {
-  return options.map((option) => {
+  const optionsToDisplay = options.length > 3 ? options.slice(0, 3) : options;
+
+  return optionsToDisplay.map((option) => {
     const {title, price} = option;
 
     return (
