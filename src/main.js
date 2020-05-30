@@ -1,4 +1,5 @@
 import API from "./api/index.js";
+import Provider from "./api/provider.js";
 import EventsListComponent from "./components/events-list.js";
 import FilterController from "./controllers/filter.js";
 import LoadingComponent from "./components/loading.js";
@@ -24,12 +25,13 @@ const pageMainContainerElement = pageMainElement.querySelector(`.page-body__cont
 const menuComponent = new MenuComponent();
 
 const api = new API(END_POINT, AUTHORIZATION);
+const apiWithProvider = new Provider(api);
 const pointsModel = new PointsModel();
 
 const tripInfoController = new TripInfoController(tripMainElement, pointsModel);
 const filtersController = new FilterController(filterTitleElement, pointsModel);
 const eventsListComponent = new EventsListComponent();
-const tripController = new TripController(eventsListComponent, pointsModel, api);
+const tripController = new TripController(eventsListComponent, pointsModel, apiWithProvider);
 const statisticsComponent = new StatisticsComponent(pointsModel);
 const loadingComponent = new LoadingComponent();
 
@@ -86,11 +88,11 @@ newEventButton.addEventListener(`click`, () => {
 
 render(pageMainContainerElement, loadingComponent, RenderPosition.BEFOREEND);
 
-api.getDesinations()
+apiWithProvider.getDesinations()
   .then((destinations) => {
-    api.getOffers()
+    apiWithProvider.getOffers()
       .then((offers) => {
-        api.getPoints()
+        apiWithProvider.getPoints()
           .then((points) => {
             remove(loadingComponent);
             pointsModel.setPoints(points);
