@@ -1,5 +1,6 @@
 import API from "./api/index.js";
 import Provider from "./api/provider.js";
+import Store from "./api/store.js";
 import EventsListComponent from "./components/events-list.js";
 import FilterController from "./controllers/filter.js";
 import LoadingComponent from "./components/loading.js";
@@ -25,7 +26,8 @@ const pageMainContainerElement = pageMainElement.querySelector(`.page-body__cont
 const menuComponent = new MenuComponent();
 
 const api = new API(END_POINT, AUTHORIZATION);
-const apiWithProvider = new Provider(api);
+const store = new Store();
+const apiWithProvider = new Provider(api, store);
 const pointsModel = new PointsModel();
 
 const tripInfoController = new TripInfoController(tripMainElement, pointsModel);

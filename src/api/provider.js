@@ -1,18 +1,30 @@
+import Point from "../models/point.js";
+import Destination from "../models/destination.js";
+import Offer from "../models/offer.js";
+
 const isOnline = () => {
   return window.navigator.onLine;
 };
 
 export default class Provider {
-  constructor(api) {
+  constructor(api, store) {
     this._api = api;
+    this._store = store;
   }
 
   getPoints() {
     if (isOnline()) {
-      return this._api.getPoints();
+      return this._api.getPoints()
+      .then((points) => {
+        points.forEach((point) => this._store.setItem(point.id, point.toRAW()));
+
+        return points;
+      });
     }
 
-    return Promise.reject(`offline logic is not implemented`);
+    const storePoints = Object.values(this._store.getItems());
+
+    return Promise.resolve(Promise.parsePoints(storePoints));
   }
 
   getDesinations() {
