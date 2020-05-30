@@ -14,6 +14,9 @@ import {remove, render, RenderPosition} from "./utils/render.js";
 
 const AUTHORIZATION = `Basic [Xy~,MHMVf2auWFD9Jj`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
+const STORE_PREFIX = `bigtrip-localstorage`;
+const STORE_VER = `v1`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const pageHeaderElement = document.querySelector(`.page-header`);
 const pageMainElement = document.querySelector(`.page-main`);
@@ -26,7 +29,7 @@ const pageMainContainerElement = pageMainElement.querySelector(`.page-body__cont
 const menuComponent = new MenuComponent();
 
 const api = new API(END_POINT, AUTHORIZATION);
-const store = new Store();
+const store = new Store(STORE_NAME, window.localStorage);
 const apiWithProvider = new Provider(api, store);
 const pointsModel = new PointsModel();
 
