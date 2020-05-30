@@ -2,6 +2,8 @@ import Point from "../models/point.js";
 import Destination from "../models/destination.js";
 import Offer from "../models/offer.js";
 
+import {nanoid} from "nanoid";
+
 const isOnline = () => {
   return window.navigator.onLine;
 };
@@ -16,8 +18,13 @@ export default class Provider {
     if (isOnline()) {
       return this._api.getPoints()
       .then((points) => {
-        points.forEach((point) => this._store.setItem(point.id, point.toRAW()));
+        const items = points.reduce((acc, current) => {
+          return Object.assign({}, acc, {
+            [current.id]: current,
+          });
+        }, {});
 
+        this._store.setItem(items);
         return points;
       });
     }
@@ -45,10 +52,20 @@ export default class Provider {
 
   createPoint(point) {
     if (isOnline()) {
-      return this._api.createPoint(point);
+      return this._api.createPoint(point)
+        .then((newPoint) => {
+          this._store.setItem(newPoint.id, newPoint.toRAW());
+
+          return newPoint;
+        });
     }
 
-    return Promise.reject(`offline logic is not implemented`);
+    const localNewPointId = nanoid();
+    const localNewPoint = Point.clone(Object.assign(point, {id: localNewPointId}));
+
+    this._store.setItem(localNewPoint.id, localNewPoint.toRAW());
+
+    return Promise.resolve(localNewPoint);
   }
 
   updatePoint(id, point) {
