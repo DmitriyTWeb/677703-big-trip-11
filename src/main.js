@@ -1,4 +1,4 @@
-import API from "./api.js";
+import API from "./api/index.js";
 import EventsListComponent from "./components/events-list.js";
 import FilterController from "./controllers/filter.js";
 import LoadingComponent from "./components/loading.js";
