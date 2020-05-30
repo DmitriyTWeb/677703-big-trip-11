@@ -53,10 +53,18 @@ export default class Provider {
 
   updatePoint(id, point) {
     if (isOnline()) {
-      return this._api.updatePoint(id, point);
+      return this._api.updatePoint(id, point)
+        .then((newPoint) => {
+          this._store.setItem(newPoint.id, newPoint.toRAW());
+
+          return newPoint;
+        });
     }
 
-    return Promise.reject(`offline logic is not implemented`);
+    const localPoint = Point.clone(Object.assign(point, {id}));
+    this._store.setItem(id, localPoint.toRAW());
+
+    return Promise.resolve(localPoint);
   }
 
   deletePoint(id) {
