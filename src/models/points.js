@@ -19,7 +19,7 @@ export default class Points {
     return this._points;
   }
 
-  setPoints(points) {
+  setPoints(points = []) {
     this._points = Array.from(points);
     this._callHandlers(this._dataChangeHandlers);
   }
@@ -27,6 +27,18 @@ export default class Points {
   setFilter(filterType) {
     this._activeFilterType = filterType;
     this._callHandlers(this._filterChangeHandlers);
+  }
+
+  setDataChangeHandler(handler) {
+    this._dataChangeHandlers.push(handler);
+  }
+
+  setFilterChangeHandler(handler) {
+    this._filterChangeHandlers.push(handler);
+  }
+
+  setFilterResetHandler(handler) {
+    this._filterResetHandler = handler;
   }
 
   removePoint(id) {
@@ -63,21 +75,9 @@ export default class Points {
     this._callHandlers(this._dataChangeHandlers);
   }
 
-  setDataChangeHandler(handler) {
-    this._dataChangeHandlers.push(handler);
-  }
-
-  setFilterChangeHandler(handler) {
-    this._filterChangeHandlers.push(handler);
-  }
-
   resetFilter() {
     this.setFilter(FilterType.EVERYTHING);
     this._filterResetHandler();
-  }
-
-  setFilterResetHandler(handler) {
-    this._filterResetHandler = handler;
   }
 
   _callHandlers(handlers) {

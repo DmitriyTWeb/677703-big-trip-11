@@ -1,6 +1,6 @@
-import Point from "./models/point.js";
-import Destination from "./models/destination.js";
-import Offer from "./models/offer.js";
+import Point from "../models/point.js";
+import Destination from "../models/destination.js";
+import Offer from "../models/offer.js";
 
 const Method = {
   GET: `GET`,
@@ -28,6 +28,18 @@ const API = class {
     return this._load({url: `points`})
       .then((response) => response.json())
       .then(Point.parsePoints);
+  }
+
+  getDesinations() {
+    return this._load({url: `destinations`})
+      .then((response) => response.json())
+      .then(Destination.parsePoints);
+  }
+
+  getOffers() {
+    return this._load({url: `offers`})
+      .then((response) => response.json())
+      .then(Offer.parseOffers);
   }
 
   createPoint(point) {
@@ -60,16 +72,14 @@ const API = class {
     return this._load({url: `points/${id}`, method: Method.DELETE});
   }
 
-  getDesinations() {
-    return this._load({url: `destinations`})
-      .then((response) => response.json())
-      .then(Destination.parsePoints);
-  }
-
-  getOffers() {
-    return this._load({url: `offers`})
-      .then((response) => response.json())
-      .then(Offer.parseOffers);
+  sync(data) {
+    return this._load({
+      url: `points/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then((response) => response.json());
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {

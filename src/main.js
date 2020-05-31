@@ -1,4 +1,6 @@
-import API from "./api.js";
+import API from "./api/index.js";
+import Provider from "./api/provider.js";
+import Store from "./api/store.js";
 import EventsListComponent from "./components/events-list.js";
 import FilterController from "./controllers/filter.js";
 import LoadingComponent from "./components/loading.js";
@@ -12,9 +14,9 @@ import {remove, render, RenderPosition} from "./utils/render.js";
 
 const AUTHORIZATION = `Basic [Xy~,MHMVf2auWFD9Jj`;
 const END_POINT = `https://11.ecmascript.pages.academy/big-trip`;
-
-let destinationsFromServer = [];
-let offersFromServer = [];
+const STORE_PREFIX = `bigtrip-localstorage`;
+const STORE_VER = `v1`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const pageHeaderElement = document.querySelector(`.page-header`);
 const pageMainElement = document.querySelector(`.page-main`);
@@ -27,14 +29,25 @@ const pageMainContainerElement = pageMainElement.querySelector(`.page-body__cont
 const menuComponent = new MenuComponent();
 
 const api = new API(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 const pointsModel = new PointsModel();
 
 const tripInfoController = new TripInfoController(tripMainElement, pointsModel);
 const filtersController = new FilterController(filterTitleElement, pointsModel);
 const eventsListComponent = new EventsListComponent();
-const tripController = new TripController(eventsListComponent, pointsModel, api);
+const tripController = new TripController(eventsListComponent, pointsModel, apiWithProvider);
 const statisticsComponent = new StatisticsComponent(pointsModel);
 const loadingComponent = new LoadingComponent();
+
+const onEscKeydown = (evt) => {
+  const isEscKey = evt.key === `Escape` || evt.key === `Esc`;
+
+  if (isEscKey) {
+    newEventButton.disabled = false;
+    document.removeEventListener(`keydown`, onEscKeydown);
+  }
+};
 
 render(menuTitleElement, menuComponent, RenderPosition.AFTER);
 
@@ -62,36 +75,58 @@ menuComponent.setOnClickHandler((menuItem) => {
 });
 
 newEventButton.addEventListener(`click`, () => {
+  newEventButton.disabled = true;
   statisticsComponent.hide();
   tripController.show();
+  document.addEventListener(`keydown`, onEscKeydown);
 
   pointsModel.setFilterResetHandler(filtersController.resetFilter);
+  tripController.setCreatingSuccessHandler(() => {
+    newEventButton.disabled = false;
+  });
+
+  tripController.setCancelButtonClickHandler(() => {
+    newEventButton.disabled = false;
+  });
   tripController.createPoint();
 });
 
 render(pageMainContainerElement, loadingComponent, RenderPosition.BEFOREEND);
 
-const getPoints = () => {
-  if (destinationsFromServer.length !== 0 && offersFromServer.length !== 0) {
-    api.getPoints()
-      .then((points) => {
-        remove(loadingComponent);
-        pointsModel.setPoints(points);
-        tripController.render(destinationsFromServer, offersFromServer);
-        tripInfoController.render();
-      });
-  }
-};
-
-api.getDesinations()
+apiWithProvider.getDesinations()
   .then((destinations) => {
-    destinationsFromServer = destinations;
-    getPoints();
+    apiWithProvider.getOffers()
+      .then((offers) => {
+        apiWithProvider.getPoints()
+          .then((points) => {
+            remove(loadingComponent);
+            pointsModel.setPoints(points);
+            tripController.render(destinations, offers);
+            tripInfoController.render();
+          });
+      });
+  })
+  .catch(() => {
+    remove(loadingComponent);
+    pointsModel.setPoints();
+    tripController.render();
   });
 
-api.getOffers()
-  .then((offers) => {
-    offersFromServer = offers;
-    getPoints();
-  });
+// window.addEventListener(`load`, () => {
+//   navigator.serviceWorker.register(`/sw.js`)
+//     .then(() => {
+//       // Действие, в случае успешной регистрации ServiceWorker
+//     }).catch(() => {
+//       // Действие, в случае ошибки при регистрации ServiceWorker
+//     });
+// });
 
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+
+  apiWithProvider.sync();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});

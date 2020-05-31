@@ -29,9 +29,9 @@ export default class Menu extends AbstractComponent {
 
   setActiveItem(menuItem) {
     const activeClass = `trip-tabs__btn--active`;
-    const tabs = Array.from(this.getElement().querySelectorAll(`.trip-tabs__btn`));
+    const tabElements = Array.from(this.getElement().querySelectorAll(`.trip-tabs__btn`));
 
-    tabs.forEach((tab) => tab.classList.remove(activeClass));
+    tabElements.forEach((tab) => tab.classList.remove(activeClass));
 
     const item = this.getElement().querySelector(`#${menuItem}`);
 

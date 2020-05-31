@@ -1,4 +1,5 @@
 import AbstractSmartComponent from "./abstract-smart-component.js";
+import {createElement} from "../utils/render.js";
 import {capitalizeFirstLetter} from "../utils/common.js";
 import {getPointCategory} from "../utils/common.js";
 import {encode} from "he";
@@ -78,7 +79,7 @@ const createOtionTemplate = (option, checked) => {
   );
 };
 
-const createOtionsTemplate = (typeOptions, pointOptions) => {
+const createOtionsTemplate = (typeOptions, pointOptions = []) => {
   if (!typeOptions || typeOptions.length === 0) {
     return ``;
   }
@@ -274,7 +275,7 @@ export default class EditPoint extends AbstractSmartComponent {
     this._flatpickrStart = null;
     this._flatpickrEnd = null;
     this._deleteButtonClickHandler = null;
-
+    this._rollupButtonClickHandler = null;
     this._submitHandler = null;
     this._favoriteHandler = null;
     this._typeChangeHandler = null;
@@ -287,6 +288,11 @@ export default class EditPoint extends AbstractSmartComponent {
 
   getTemplate() {
     return createEditPointTemplate(this._point, this._destinations, this._allTypesOptions, this._externalData);
+  }
+
+  getData() {
+    const form = this.getElement().querySelector(`form`);
+    return new FormData(form);
   }
 
   setData(data) {
@@ -322,11 +328,6 @@ export default class EditPoint extends AbstractSmartComponent {
     this.rerender();
   }
 
-  getData() {
-    const form = this.getElement().querySelector(`form`);
-    return new FormData(form);
-  }
-
   disableForm(disabled) {
     disableForm(this.getElement().querySelector(`form`), disabled);
   }
@@ -338,11 +339,23 @@ export default class EditPoint extends AbstractSmartComponent {
   }
 
   setDeleteButtonClickHandler(handler) {
-
     this.getElement().querySelector(`.event__reset-btn`)
       .addEventListener(`click`, handler);
 
     this._deleteButtonClickHandler = handler;
+  }
+
+  setRollupButtonClickHandler(handler) {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .addEventListener(`click`, handler);
+
+    this._rollupButtonClickHandler = handler;
+  }
+
+  deleteRollupButtonClickHandler() {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .removeEventListener(`click`, this._rollupClickHandler);
+    this._rollupButtonClickHandler = null;
   }
 
   setFavoriteButtonClickHandler(handler) {
@@ -366,9 +379,9 @@ export default class EditPoint extends AbstractSmartComponent {
       allowInput: true,
       enableTime: true,
       altFormat: `d/m/Y H:i`,
+      time_24hr: true, //eslint-disable-line
       dateFormat: `U`,
-
-      defaultDate: this._point.startDate || `today`
+      defaultDate: this._point.startDate || `today`,
     });
 
     const endDateElement = this.getElement().querySelector(`[name="event-end-time"]`);
@@ -376,49 +389,107 @@ export default class EditPoint extends AbstractSmartComponent {
       altInput: true,
       allowInput: true,
       enableTime: true,
+      time_24hr: true, //eslint-disable-line
       altFormat: `d/m/Y H:i`,
       dateFormat: `U`,
       defaultDate: this._point.endDate || `today`,
+      onOpen: [
+        (selectedDates, dateStr, instance) => {
+          instance.set(`minDate`, `${startDateElement.value}`);
+        }
+      ],
+    });
+
+    this._flatpickrStart.config.onChange.push(() => {
+      if (endDateElement.value < startDateElement.value) {
+        const SECONDS_IN_MINUTE = 60;
+        const MILLISECONDS_IN_SECOND = 1000;
+        this._flatpickrEnd.setDate(
+            new Date((startDateElement.value * MILLISECONDS_IN_SECOND) + SECONDS_IN_MINUTE * MILLISECONDS_IN_SECOND)
+        );
+      }
     });
   }
 
   _subscribeOnEvents() {
     const element = this.getElement();
 
-    const radioButtons = element.querySelectorAll(`[name="event-type"]`);
-    Array.from(radioButtons).forEach((button) => {
+    const radioButtonElements = element.querySelectorAll(`[name="event-type"]`);
+    Array.from(radioButtonElements).forEach((button) => {
       button.addEventListener(`change`, (evt) => {
         const newType = evt.target.value;
-        this._point.type = newType;
+        const typeToggleElement = this.getElement().querySelector(`.event__type-toggle`);
 
-        this.rerender();
+        typeToggleElement.checked = false;
+        this._updateOptionsDetails(newType);
       });
     });
 
     element.querySelector(`[name="event-price"]`)
-      .addEventListener(`change`, (evt) => {
-        const newPrice = encode(evt.target.value);
+    .addEventListener(`input`, (evt) => {
+      const sourcePrice = evt.target.value;
+      const isInteger = /^\d+$/.test(sourcePrice);
 
-        if (newPrice === `` || isNaN(newPrice)) {
-          evt.target.setCustomValidity(`Please input correct price`);
-          return;
-        }
-        this._point.inputPrice = newPrice;
-
-        this.rerender();
-      });
+      if (!isInteger) {
+        evt.target.value = encode(sourcePrice.slice(0, sourcePrice.length - 1));
+        return;
+      }
+    });
 
     element.querySelector(`[name="event-destination"]`)
       .addEventListener(`change`, (evt) => {
         const inputDestination = encode(evt.target.value);
         if (!this._destinations.some((item) => item.name === inputDestination)) {
-          evt.target.setCustomValidity(`Please choose one destination from the List`);
+          evt.target.setCustomValidity(`Please choose a destination from the list of supported destinations`);
           return;
         }
-        const newDestination = this._destinations.find((item) => item.name === encode(evt.target.value));
-        this._point.destination = newDestination;
+        const newDestination = this._destinations.find((item) => item.name === inputDestination);
 
-        this.rerender();
+        this._updateDestinationDetails(newDestination);
       });
+  }
+
+  _updateDestinationDetails(newDestination) {
+    const containerElement = this.getElement().querySelector(`.event__details`);
+    const oldDestinationElement = containerElement.querySelector(`.event__section--destination`);
+
+    const destinationDetailsTemplate = createDestinationDetailsTemplate(newDestination);
+    const newDestinationElement = createElement(destinationDetailsTemplate);
+
+    if (!newDestinationElement && !oldDestinationElement) {
+      return;
+    } else if (newDestinationElement && oldDestinationElement) {
+      containerElement.replaceChild(newDestinationElement, oldDestinationElement);
+    } else if (!newDestinationElement) {
+      containerElement.removeChild(oldDestinationElement);
+    } else {
+      containerElement.append(newDestinationElement);
+    }
+  }
+
+  _updateOptionsDetails(newType) {
+    const containerElement = this.getElement().querySelector(`.event__details`);
+    const oldOptionsElement = containerElement.querySelector(`.event__section--offers`);
+
+    const typeOptions = this._allTypesOptions.find((item) => item.type === newType);
+    const newOptionsTemplate = createOtionsTemplate(typeOptions.options);
+    const newOptionsElement = createElement(newOptionsTemplate);
+
+    const typeOutputElement = this.getElement().querySelector(`.event__type-output`);
+    const pointCategory = getPointCategory(newType);
+    const header = `${capitalizeFirstLetter(newType)} ${pointCategory.toLowerCase() === `activity` ? `in` : `to`}`;
+
+    typeOutputElement.innerHTML = header;
+
+    if (!newOptionsElement && !oldOptionsElement) {
+      return;
+    }
+    if (oldOptionsElement && newOptionsElement) {
+      containerElement.replaceChild(newOptionsElement, oldOptionsElement);
+    } else if (!newOptionsElement) {
+      containerElement.removeChild(oldOptionsElement);
+    } else {
+      containerElement.prepend(newOptionsElement);
+    }
   }
 }

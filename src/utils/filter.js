@@ -22,5 +22,5 @@ export const getPointsByFilter = (points, filterType) => {
       return getFuturePoint(points, nowDate);
   }
 
-  return points;
+  return points ? points : [];
 };

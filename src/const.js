@@ -21,5 +21,4 @@ export const FilterType = {
 
 export const pointTypes = [`taxi`, `bus`, `train`, `ship`, `transport`, `drive`, `flight`, `check-in`, `sightseeing`, `restaurant`];
 
-export const activityCategory = [`check-in`, `sightseeing`, `restaurant`];
-export const destinationNames = [`amsterdam`, `geneva`, `chamonix`, `saint Petersburg`];
+export const activityCategoryTypes = [`check-in`, `sightseeing`, `restaurant`];
