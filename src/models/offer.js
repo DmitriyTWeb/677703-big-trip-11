@@ -4,6 +4,7 @@ export default class Offer {
     this.options = offer[`offers`];
   }
 
+
   static parseOffer(offer) {
     return new Offer(offer);
   }

@@ -1,6 +1,6 @@
 import DayComponent from "../components/day.js";
 import NoPointsComponent from "../components/no-points.js";
-import {render, RenderPosition} from "../utils/render.js";
+import {remove, render, RenderPosition} from "../utils/render.js";
 import SortComponent, {SortType} from "../components/sort.js";
 import PointController, {Mode as PointControllerMode, EmptyPoint} from "../controllers/point.js";
 import TripDaysComponent from "../components/trip-days.js";
@@ -128,13 +128,22 @@ export default class TripController {
     if (this._creatingPoint) {
       return;
     }
+    const container = this._container.getElement();
+    const tripDaysElement = this._tripDaysComponent.getElement();
+
+    if (this._noPointsComponent) {
+      remove(this._noPointsComponent);
+    }
     this._sortComponent.resetSortType();
     this._sortTypeChangeHandler(SortType.EVENT);
     this._viewChangeHandler();
     this._pointsModel.setFilter(FilterType.EVERYTHING);
     this._pointsModel.resetFilter();
 
-    const tripDaysElement = this._tripDaysComponent.getElement();
+    if (!container.contains(tripDaysElement)) {
+      render(container, this._tripDaysComponent, RenderPosition.BEFOREEND);
+    }
+
     this._creatingPoint = new PointController(tripDaysElement, this._onDataChange, this._viewChangeHandler);
     this._creatingPoint.setCancelButtonClickHandler(this._cancelButtonClickHandler);
 

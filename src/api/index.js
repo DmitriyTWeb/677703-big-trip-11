@@ -33,7 +33,7 @@ const API = class {
   getDesinations() {
     return this._load({url: `destinations`})
       .then((response) => response.json())
-      .then(Destination.parsePoints);
+      .then(Destination.parseDestinations);
   }
 
   getOffers() {

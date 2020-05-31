@@ -153,7 +153,6 @@ const createEditPointTemplate = (point, destinations, allTypesOptions, externalD
 
   const pointCategory = getPointCategory(type);
   const typeOptions = allTypesOptions.find((item) => item.type === point.type);
-
   const transferItemsTemplate = createEventTypeItemGroup(transferTypes, type);
   const activityItemsTemplate = createEventTypeItemGroup(activityTypes, type);
   const header = `${capitalizeFirstLetter(type)} ${pointCategory.toLowerCase() === `activity` ? `in` : `to`}`;

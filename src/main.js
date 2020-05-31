@@ -5,6 +5,7 @@ import EventsListComponent from "./components/events-list.js";
 import FilterController from "./controllers/filter.js";
 import LoadingComponent from "./components/loading.js";
 import PointsModel from "./models/points.js";
+import PointModel from "./models/point.js";
 import MenuComponent, {MenuItem} from "./components/menu.js";
 import StatisticsComponent from "./components/statistics.js";
 import TripController from "./controllers/trip.js";
@@ -47,6 +48,12 @@ const onEscKeydown = (evt) => {
     newEventButton.disabled = false;
     document.removeEventListener(`keydown`, onEscKeydown);
   }
+};
+
+const catcher = () => {
+  remove(loadingComponent);
+  pointsModel.setPoints();
+  tripController.render();
 };
 
 render(menuTitleElement, menuComponent, RenderPosition.AFTER);
@@ -104,12 +111,13 @@ apiWithProvider.getDesinations()
             tripController.render(destinations, offers);
             tripInfoController.render();
           });
+      })
+      .catch(() => {
+        catcher();
       });
   })
   .catch(() => {
-    remove(loadingComponent);
-    pointsModel.setPoints();
-    tripController.render();
+    catcher();
   });
 
 window.addEventListener(`load`, () => {
@@ -124,7 +132,10 @@ window.addEventListener(`load`, () => {
 window.addEventListener(`online`, () => {
   document.title = document.title.replace(` [offline]`, ``);
 
-  apiWithProvider.sync();
+  apiWithProvider.sync()
+    .then((points) => {
+      pointsModel.setPoints(PointModel.parsePoints(points));
+    });
 });
 
 window.addEventListener(`offline`, () => {
