@@ -109,10 +109,8 @@ export default class Provider {
 
       return this._api.sync(storePoints)
         .then((response) => {
-
           // const createdPoints = getSyncedPoints(response.created);
           const createdPoints = response.created;
-
           const updatedPoints = getSyncedPoints(response.updated);
 
           const items = createStoreStructure([...createdPoints, ...updatedPoints]);
