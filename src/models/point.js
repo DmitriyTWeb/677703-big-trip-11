@@ -27,8 +27,8 @@ export default class Point {
     return new Point(point);
   }
 
-  static parsePoints(point) {
-    return point.map(Point.parsePoint);
+  static parsePoints(points) {
+    return points.map(Point.parsePoint);
   }
 
   static clone(point) {
