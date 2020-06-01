@@ -44,7 +44,7 @@ const parseFormData = (formData, destinations, allTypesOptions) => {
   const destination = destinations.find((item) => item.name === destinationFromForm);
 
   let isFavorite = false;
-  let options = [];
+  const options = [];
 
   for (const [key] of formData.entries()) {
     if (/event-offer\w*/.test(key)) {

@@ -378,7 +378,6 @@ export default class EditPoint extends AbstractSmartComponent {
       allowInput: true,
       enableTime: true,
       altFormat: `d/m/Y H:i`,
-      time_24hr: true, //eslint-disable-line
       dateFormat: `U`,
       defaultDate: this._point.startDate || `today`,
     });
@@ -388,7 +387,6 @@ export default class EditPoint extends AbstractSmartComponent {
       altInput: true,
       allowInput: true,
       enableTime: true,
-      time_24hr: true, //eslint-disable-line
       altFormat: `d/m/Y H:i`,
       dateFormat: `U`,
       defaultDate: this._point.endDate || `today`,
