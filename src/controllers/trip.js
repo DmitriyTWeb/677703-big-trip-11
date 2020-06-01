@@ -86,6 +86,7 @@ export default class TripController {
     this._cancelButtonClickHandler = null;
 
     this._sortTypeChangeHandler = this._sortTypeChangeHandler.bind(this);
+    this._sortType = SortType.EVENT;
 
     this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
@@ -179,8 +180,8 @@ export default class TripController {
 
   _updatePoints() {
     this._removePoints();
-    const points = getSortedPoints(this._pointsModel.getPoints(), SortType.EVENT);
-    this._renderPoints(points);
+    const points = getSortedPoints(this._pointsModel.getPoints(), this._sortType);
+    this._renderPoints(points, true);
   }
 
   _onDataChange(pointController, oldData, newData) {
@@ -238,6 +239,8 @@ export default class TripController {
     const sortedPoints = getSortedPoints(this._pointsModel.getPoints(), sortType);
     const isSortingOn = sortType !== SortType.EVENT ? true : false;
     const dayTitle = this._sortComponent.getElement().querySelector(`.trip-sort__item`);
+
+    this._sortType = sortType;
 
     if (isSortingOn) {
       dayTitle.innerHTML = ``;
