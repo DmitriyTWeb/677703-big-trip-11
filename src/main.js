@@ -100,10 +100,16 @@ newEventButton.addEventListener(`click`, () => {
 
 render(pageMainContainerElement, loadingComponent, RenderPosition.BEFOREEND);
 
+let destinationsFromServer = null;
+let offersFromServer = null;
+
 apiWithProvider.getDesinations()
   .then((destinations) => {
     apiWithProvider.getOffers()
       .then((offers) => {
+        destinationsFromServer = destinations;
+        offersFromServer = offers;
+
         apiWithProvider.getPoints()
           .then((points) => {
             remove(loadingComponent);
@@ -135,6 +141,7 @@ window.addEventListener(`online`, () => {
   apiWithProvider.sync()
     .then((points) => {
       pointsModel.setPoints(PointModel.parsePoints(points));
+      tripController.render(destinationsFromServer, offersFromServer);
     });
 });
 

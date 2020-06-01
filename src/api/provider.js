@@ -1,7 +1,4 @@
 import Point from "../models/point.js";
-// import Destination from "../models/destination.js";
-// import Offer from "../models/offer.js";
-
 import {nanoid} from "nanoid";
 
 const isOnline = () => {
