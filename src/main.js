@@ -83,6 +83,7 @@ menuComponent.setOnClickHandler((menuItem) => {
 
 newEventButton.addEventListener(`click`, () => {
   newEventButton.disabled = true;
+  menuComponent.setActiveItem(MenuItem.TABLE);
   statisticsComponent.hide();
   tripController.show();
   document.addEventListener(`keydown`, onEscKeydown);
