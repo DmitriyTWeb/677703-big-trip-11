@@ -73,6 +73,8 @@ menuComponent.setOnClickHandler((menuItem) => {
       tripController.show();
       break;
     case MenuItem.STATS:
+      newEventButton.disabled = false;
+      tripController.resetCreatingPoint();
       tripController.resetSortType();
       menuComponent.setActiveItem(MenuItem.STATS);
       statisticsComponent.show();

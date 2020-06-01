@@ -150,6 +150,10 @@ export default class TripController {
     this._creatingPoint.render(EmptyPoint, PointControllerMode.ADDING, this._destinations, this._allTypesOptions);
   }
 
+  resetCreatingPoint() {
+    this._creatingPoint = null;
+  }
+
   resetSortType() {
     this._sortTypeChangeHandler(SortType.EVENT);
     this._sortComponent.resetSortType();
