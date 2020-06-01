@@ -169,9 +169,8 @@ export default class Point {
           remove(oldPointEditComponent);
         }
         document.addEventListener(`keydown`, this._escKeydownHandler);
+        this._pointEditComponent.modifyToNewPoint();
         render(this._container, this._pointEditComponent, RenderPosition.AFTERBEGIN);
-        this._pointEditComponent.getElement().querySelector(`.event__reset-btn`)
-            .textContent = `Cancel`;
         break;
       case Mode.EDIT:
         if (oldPointEditComponent && oldPointComponent) {

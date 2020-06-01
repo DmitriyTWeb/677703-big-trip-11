@@ -364,6 +364,18 @@ export default class EditPoint extends AbstractSmartComponent {
     this._favoriteHandler = handler;
   }
 
+  modifyToNewPoint() {
+    const element = this.getElement();
+    const favoriteButtonElement = element.querySelector(`#event-favorite-1`);
+    const favoriteLabelElement = element.querySelector(`.event__favorite-btn`);
+    const rollupButtonElement = element.querySelector(`.event__rollup-btn`);
+
+    element.querySelector(`.event__reset-btn`).textContent = `Cancel`;
+    favoriteButtonElement.remove();
+    favoriteLabelElement.remove();
+    rollupButtonElement.remove();
+  }
+
   _applyFlatpickr() {
     if (this._flatpickrStart || this._flatpickrEnd) {
       this._flatpickrStart.destroy();
