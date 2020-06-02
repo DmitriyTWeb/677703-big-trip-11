@@ -125,7 +125,6 @@ export default class Point {
         saveButtonText: `Saving...`,
       });
       this._pointEditComponent.disableForm(true);
-
       this._onDataChange(this, point, data);
     });
 
@@ -229,6 +228,8 @@ export default class Point {
     if (isEscKey) {
       if (this._mode === Mode.ADDING) {
         this._onDataChange(this, EmptyPoint, null);
+        document.removeEventListener(`keydown`, this._escKeydownHandler);
+        return;
       }
 
       this._replaceEditToPoint();

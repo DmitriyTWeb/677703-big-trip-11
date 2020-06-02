@@ -152,7 +152,11 @@ export default class Trip {
   }
 
   resetCreatingPoint() {
-    this._creatingPoint = null;
+    if (this._creatingPoint) {
+      this._creatingPoint.destroy();
+      this._creatingPoint = null;
+      this._cancelButtonClickHandler();
+    }
   }
 
   resetSortType() {
@@ -163,7 +167,6 @@ export default class Trip {
   _renderPoints(points, isSortingOn = false) {
     const tripDaysElement = this._tripDaysComponent.getElement();
     tripDaysElement.innerHTML = ``;
-
     this._renderedPointControllers = renderPoints(
         tripDaysElement,
         points,
@@ -181,14 +184,15 @@ export default class Trip {
   _updatePoints() {
     this._removePoints();
     const points = getSortedPoints(this._pointsModel.getPoints(), this._sortType);
-    this._renderPoints(points, true);
+    const isSortingOn = this._sortType === SortType.EVENT ? false : true;
+    this._renderPoints(points, isSortingOn);
   }
 
   _onDataChange(pointController, oldData, newData) {
     if (oldData === EmptyPoint) {
       this._creatingPoint = null;
+      pointController.destroy();
       if (newData === null) {
-        pointController.destroy();
         this._updatePoints();
       } else {
         this._api.createPoint(newData)
@@ -216,7 +220,6 @@ export default class Trip {
           const isSuccess = this._pointsModel.updatePoint(oldData.id, pointModel);
 
           if (isSuccess) {
-            pointController.render(pointModel, PointControllerMode.DEFAULT, this._destinations, this._allTypesOptions);
             this._updatePoints();
           }
         })
@@ -227,6 +230,7 @@ export default class Trip {
   }
 
   _viewChangeHandler() {
+    this.resetCreatingPoint();
     this._renderedPointControllers.forEach((it) => it.setDefaultView());
   }
 
@@ -237,7 +241,7 @@ export default class Trip {
 
   _sortTypeChangeHandler(sortType) {
     const sortedPoints = getSortedPoints(this._pointsModel.getPoints(), sortType);
-    const isSortingOn = sortType !== SortType.EVENT ? true : false;
+    const isSortingOn = sortType === SortType.EVENT ? false : true;
     const dayTitle = this._sortComponent.getElement().querySelector(`.trip-sort__item`);
 
     this._sortType = sortType;
@@ -251,6 +255,4 @@ export default class Trip {
     this._removePoints();
     this._renderPoints(sortedPoints, isSortingOn);
   }
-
-
 }
