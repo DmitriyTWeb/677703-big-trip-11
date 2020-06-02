@@ -64,6 +64,7 @@ const getSortedPoints = (points, sortType) => {
 
   return sortedPoints;
 };
+
 export default class Trip {
   constructor(container, pointsModel, api) {
     this._container = container;
@@ -91,21 +92,6 @@ export default class Trip {
     this._sortComponent.setSortTypeChangeHandler(this._sortTypeChangeHandler);
     this._pointsModel.setFilterChangeHandler(this._onFilterChange);
   }
-  setCreatingSuccessHandler(handler) {
-    this._onCreatingSuccessHandler = handler;
-  }
-
-  setCancelButtonClickHandler(handler) {
-    this._cancelButtonClickHandler = handler;
-  }
-
-  show() {
-    this._container.show();
-  }
-
-  hide() {
-    this._container.hide();
-  }
 
   render(destinations = [], allTypesOptions = []) {
     const container = this._container.getElement();
@@ -123,6 +109,14 @@ export default class Trip {
     render(container, this._tripDaysComponent, RenderPosition.BEFOREEND);
 
     this._renderPoints(getSortedPoints(points, SortType.EVENT));
+  }
+
+  show() {
+    this._container.show();
+  }
+
+  hide() {
+    this._container.hide();
   }
 
   createPoint() {
@@ -162,6 +156,14 @@ export default class Trip {
   resetSortType() {
     this._sortTypeChangeHandler(SortType.EVENT);
     this._sortComponent.resetSortType();
+  }
+
+  setCreatingSuccessHandler(handler) {
+    this._onCreatingSuccessHandler = handler;
+  }
+
+  setCancelButtonClickHandler(handler) {
+    this._cancelButtonClickHandler = handler;
   }
 
   _renderPoints(points, isSortingOn = false) {

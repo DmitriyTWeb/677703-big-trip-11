@@ -38,8 +38,8 @@ const parseFormData = (formData, destinations, allTypesOptions) => {
   const type = formData.get(`event-type`);
   const typeOptions = getTypeOptions(allTypesOptions, type);
   const destinationFromForm = encode(formData.get(`event-destination`));
-  const startDate = parseInt(encode(formData.get(`event-start-time`)), 10) * 1000;
-  const endDate = parseInt(encode(formData.get(`event-end-time`)), 10) * 1000;
+  const startDate = parseInt(encode(formData.get(`event-start-time`)), 10) * MILLISECONDS_IN_SECOND;
+  const endDate = parseInt(encode(formData.get(`event-end-time`)), 10) * MILLISECONDS_IN_SECOND;
   const inputPrice = parseInt(encode(formData.get(`event-price`)), 10);
 
   const destination = destinations.find((item) => item.name === destinationFromForm);
@@ -84,16 +84,6 @@ export default class Point {
     this._allTypesOptions = null;
 
     this._cancelButtonClickHandler = null;
-  }
-
-  setDefaultView() {
-    if (this._mode !== Mode.DEFAULT) {
-      this._replaceEditToPoint();
-    }
-  }
-
-  setCancelButtonClickHandler(handler) {
-    this._cancelButtonClickHandler = handler;
   }
 
   render(point, mode, destinations, allTypesOptions) {
@@ -203,6 +193,16 @@ export default class Point {
 
       this._pointEditComponent.disableForm(false);
     }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  setDefaultView() {
+    if (this._mode !== Mode.DEFAULT) {
+      this._replaceEditToPoint();
+    }
+  }
+
+  setCancelButtonClickHandler(handler) {
+    this._cancelButtonClickHandler = handler;
   }
 
   _replaceEditToPoint() {

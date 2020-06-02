@@ -1,4 +1,3 @@
-
 import AbstractComponent from "./abstract-component.js";
 import moment from "moment";
 
@@ -45,7 +44,6 @@ const getRoute = (points) => {
 
   return route;
 };
-
 const getPointCost = (point) => {
   const optionsCost = point.options.reduce((acc, current) => {
     return acc + current.price;

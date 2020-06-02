@@ -36,16 +36,13 @@ const AlignPosition = {
   START: `start`,
   END: `end`,
 };
-
 const Position = {
   LEFT: `left`,
 };
-
 const Color = {
   WHITE: `#ffffff`,
   BLACK: `#000000`,
 };
-
 const ChartTitle = {
   MONEY: `MONEY`,
   TRANSPORT: `TRANSPORT`,
@@ -372,17 +369,17 @@ export default class Statistics extends AbstractSmartComponent {
     return createStatisticsTemplate();
   }
 
-  show() {
-    super.show();
-    this.rerender();
-  }
-
   recoveryListener() {}
 
   rerender() {
     super.rerender();
 
     this._renderCharts();
+  }
+
+  show() {
+    super.show();
+    this.rerender();
   }
 
   _renderCharts() {
