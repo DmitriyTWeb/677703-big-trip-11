@@ -469,6 +469,8 @@ export default class EditPoint extends AbstractSmartComponent {
           evt.target.setCustomValidity(`Please choose a destination from the list of supported destinations`);
           return;
         }
+
+        evt.target.setCustomValidity(``);
         const newDestination = this._destinations.find((item) => item.name === inputDestination);
 
         this._updateDestinationDetails(newDestination);
