@@ -49,14 +49,14 @@ export default class Filter extends AbstractComponent {
     return createFiltersTemplate(this._filters, this._relevantFilter);
   }
 
+  resetFilter() {
+    this.getElement().querySelector(`#filter-everything`).checked = true;
+  }
+
   setFilterChangeHandler(handler) {
     this.getElement().addEventListener(`change`, (evt) => {
       const filterName = getFilterNameById(evt.target.id);
       handler(filterName);
     });
-  }
-
-  resetFilter() {
-    this.getElement().querySelector(`#filter-everything`).checked = true;
   }
 }

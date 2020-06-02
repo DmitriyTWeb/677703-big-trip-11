@@ -302,6 +302,19 @@ export default class EditPoint extends AbstractSmartComponent {
     this.rerender();
   }
 
+  rerender() {
+    super.rerender();
+
+    this._applyFlatpickr();
+  }
+
+  recoveryListener() {
+    this.setSubmitHandler(this._submitHandler);
+    this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
+    this.setFavoriteButtonClickHandler(this._favoriteHandler);
+    this._subscribeOnEvents();
+  }
+
   removeElement() {
     if (this._flatpickrStart || this._flatpickrEnd) {
       this._flatpickrStart.destroy();
@@ -313,25 +326,30 @@ export default class EditPoint extends AbstractSmartComponent {
     super.removeElement();
   }
 
-  recoveryListener() {
-    this.setSubmitHandler(this._submitHandler);
-    this.setDeleteButtonClickHandler(this._deleteButtonClickHandler);
-    this.setFavoriteButtonClickHandler(this._favoriteHandler);
-    this._subscribeOnEvents();
-  }
-
-  rerender() {
-    super.rerender();
-
-    this._applyFlatpickr();
-  }
-
   reset() {
     this.rerender();
   }
 
+  modifyToNewPoint() {
+    const element = this.getElement();
+    const favoriteButtonElement = element.querySelector(`#event-favorite-1`);
+    const favoriteLabelElement = element.querySelector(`.event__favorite-btn`);
+    const rollupButtonElement = element.querySelector(`.event__rollup-btn`);
+
+    element.querySelector(`.event__reset-btn`).textContent = `Cancel`;
+    favoriteButtonElement.remove();
+    favoriteLabelElement.remove();
+    rollupButtonElement.remove();
+  }
+
   disableForm(disabled) {
     disableForm(this.getElement().querySelector(`form`), disabled);
+  }
+
+  deleteRollupButtonClickHandler() {
+    this.getElement().querySelector(`.event__rollup-btn`)
+      .removeEventListener(`click`, this._rollupClickHandler);
+    this._rollupButtonClickHandler = null;
   }
 
   setSubmitHandler(handler) {
@@ -354,29 +372,11 @@ export default class EditPoint extends AbstractSmartComponent {
     this._rollupButtonClickHandler = handler;
   }
 
-  deleteRollupButtonClickHandler() {
-    this.getElement().querySelector(`.event__rollup-btn`)
-      .removeEventListener(`click`, this._rollupClickHandler);
-    this._rollupButtonClickHandler = null;
-  }
-
   setFavoriteButtonClickHandler(handler) {
     this.getElement().querySelector(`.event__favorite-checkbox`)
       .addEventListener(`click`, handler);
 
     this._favoriteHandler = handler;
-  }
-
-  modifyToNewPoint() {
-    const element = this.getElement();
-    const favoriteButtonElement = element.querySelector(`#event-favorite-1`);
-    const favoriteLabelElement = element.querySelector(`.event__favorite-btn`);
-    const rollupButtonElement = element.querySelector(`.event__rollup-btn`);
-
-    element.querySelector(`.event__reset-btn`).textContent = `Cancel`;
-    favoriteButtonElement.remove();
-    favoriteLabelElement.remove();
-    rollupButtonElement.remove();
   }
 
   _applyFlatpickr() {
