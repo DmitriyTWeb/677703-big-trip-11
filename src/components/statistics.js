@@ -12,6 +12,19 @@ const TICKS_PADDING = 5;
 const BAR_THICKNESS = 44;
 const MIN_BAR_LENGTH = 50;
 
+const TypeEmoji = {
+  BUS: `🚌`,
+  CHECK_IN: `🏨`,
+  DRIVE: `🚗`,
+  FLIGHT: `✈️`,
+  RESTAURANT: `🍽️`,
+  SHIP: `🚢`,
+  SIGHTSEEING: `🏛️`,
+  TAXI: `🚕`,
+  TRAIN: `🚂`,
+  TRANSPORT: `🚆`,
+};
+
 const ChartType = {
   HORIZAONTAL_BAR: `horizontalBar`,
 };
@@ -39,6 +52,10 @@ const ChartTitle = {
   TIME_SPENT: `TIME SPENT`,
 };
 
+const getEmojiByType = (type) => {
+  const emojiTypeName = type.toUpperCase().replace(`-`, `_`);
+  return TypeEmoji[emojiTypeName];
+};
 const getUniqItems = (item, index, array) => {
   return array.indexOf(item) === index;
 };
@@ -83,8 +100,8 @@ const getDuration = (startTime, endTime) => {
 const renderMoneyChart = (moneyCtx, points) => {
   const types = points.map((point) => point.type)
       .filter(getUniqItems);
-  const typesUpperCase = types.map((type) => type.toUpperCase());
   const typesCost = types.map((type) => calculateTypeCost(type, points));
+  const typesCostLabels = types.map((type) => `${getEmojiByType(type)} ${type.toUpperCase()}`);
 
   moneyCtx.height = BAR_HEIGHT * types.length;
   if (typesCost.length === 1) {
@@ -95,7 +112,7 @@ const renderMoneyChart = (moneyCtx, points) => {
     plugins: [ChartDataLabels],
     type: ChartType.HORIZAONTAL_BAR,
     data: {
-      labels: typesUpperCase,
+      labels: typesCostLabels,
       datasets: [{
         data: typesCost,
         backgroundColor: Color.WHITE,
@@ -160,7 +177,9 @@ const renderMoneyChart = (moneyCtx, points) => {
 const renderTransportChart = (transportCtx, points) => {
   const typeCount = calculateTransportTypeNumbers(points);
 
-  const transportLabels = Object.keys(typeCount).map((item) => item.toUpperCase());
+  const transportLabels = Object.keys(typeCount)
+    .map((type) => `${getEmojiByType(type)} ${type.toUpperCase()}`);
+
   const transportData = Object.values(typeCount);
   transportCtx.height = BAR_HEIGHT * transportLabels.length;
   if (transportData.length === 1) {
@@ -244,7 +263,8 @@ const renderTimeChart = (timeCtx, points) => {
     }
   });
 
-  const timeLabels = Object.keys(typeTimes).map((item) => item.toUpperCase());
+  const timeLabels = Object.keys(typeTimes)
+    .map((type) => `${getEmojiByType(type)} ${type.toUpperCase()}`);
   const timeData = Object.values(typeTimes).map((item) => Math.round(item.asHours()));
   timeCtx.height = BAR_HEIGHT * timeLabels.length;
   if (timeData.length === 1) {
