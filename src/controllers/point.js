@@ -7,6 +7,7 @@ import PointModel from "../models/point.js";
 import {render, replace, RenderPosition, remove} from "../utils/render.js";
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
+const MILLISECONDS_IN_SECOND = 1000;
 
 export const Mode = {
   DEFAULT: `default`,
@@ -190,8 +191,8 @@ export default class Point {
   }
 
   shake() {
-    this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
-    this._pointComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MILLISECONDS_IN_SECOND}s`;
+    this._pointComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MILLISECONDS_IN_SECOND}s`;
 
     setTimeout(() => {
       this._pointEditComponent.getElement().style.animation = ``;
