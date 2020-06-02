@@ -116,10 +116,8 @@ export default class Point {
 
     this._pointEditComponent.setSubmitHandler((evt) => {
       evt.preventDefault();
-      const form = this._pointEditComponent.getElement().querySelector(`form`);
-      if (form.classList.contains(`error-border`)) {
-        form.classList.remove(`error-border`);
-      }
+      this._pointEditComponent.removeError();
+
       const formData = this._pointEditComponent.getData();
       const data = parseFormData(formData, destinations, this._allTypesOptions);
 
@@ -191,19 +189,19 @@ export default class Point {
   }
 
   shake() {
-    this._pointEditComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MILLISECONDS_IN_SECOND}s`;
-    this._pointComponent.getElement().style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / MILLISECONDS_IN_SECOND}s`;
+    this._pointEditComponent.setStyle(`animation`, `shake ${SHAKE_ANIMATION_TIMEOUT / MILLISECONDS_IN_SECOND}s`);
+    this._pointComponent.setStyle(`animation`, `shake ${SHAKE_ANIMATION_TIMEOUT / MILLISECONDS_IN_SECOND}s`);
 
     setTimeout(() => {
-      this._pointEditComponent.getElement().style.animation = ``;
-      this._pointComponent.getElement().style.animation = ``;
+      this._pointEditComponent.setStyle(`animation`, ``);
+      this._pointComponent.setStyle(`animation`, ``);
 
       this._pointEditComponent.setData({
         saveButtonText: `Save`,
         deleteButtonText: `Delete`,
       });
-      this._pointEditComponent.getElement().querySelector(`form`)
-        .classList.add(`error-border`);
+      this._pointEditComponent.addError();
+
       this._pointEditComponent.disableForm(false);
     }, SHAKE_ANIMATION_TIMEOUT);
   }

@@ -81,6 +81,10 @@ export default class Point extends AbstractComponent {
     return createPointTemplate(this._point);
   }
 
+  setStyle(property, value) {
+    this.getElement().style[`${property}`] = value;
+  }
+
   setRollupButtonClickHandler(cb) {
     this.getElement().querySelector(`.event__rollup-btn`)
       .addEventListener(`click`, cb);

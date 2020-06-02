@@ -302,6 +302,10 @@ export default class EditPoint extends AbstractSmartComponent {
     this.rerender();
   }
 
+  setStyle(property, value) {
+    this.getElement().style[`${property}`] = value;
+  }
+
   rerender() {
     super.rerender();
 
@@ -344,6 +348,18 @@ export default class EditPoint extends AbstractSmartComponent {
 
   disableForm(disabled) {
     disableForm(this.getElement().querySelector(`form`), disabled);
+  }
+
+  addError() {
+    this.getElement().querySelector(`form`).classList.add(`error-border`);
+  }
+
+  removeError() {
+    const form = this.getElement().querySelector(`form`);
+
+    if (form.classList.contains(`error-border`)) {
+      form.classList.remove(`error-border`);
+    }
   }
 
   deleteRollupButtonClickHandler() {
